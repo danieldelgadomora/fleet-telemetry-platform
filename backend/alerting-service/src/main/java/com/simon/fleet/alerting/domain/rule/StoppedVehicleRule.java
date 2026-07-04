@@ -55,10 +55,26 @@ public class StoppedVehicleRule implements AlertRule {
                 .vehicleId(reading.vehicleId())
                 .ruleCode(RULE_CODE)
                 .message("Vehículo %s detenido en la misma posición desde hace %s"
-                        .formatted(reading.vehicleId().value(), stoppedFor))
+                        .formatted(reading.vehicleId().value(), formatDuration(stoppedFor)))
                 .raisedAt(reading.recordedAt())
                 .build();
 
         return new AlertEvaluationResult(state, Optional.of(alert));
+    }
+
+    private static String formatDuration(Duration duration) {
+        long hours = duration.toHours();
+        long minutes = duration.toMinutesPart();
+        long seconds = duration.toSecondsPart();
+
+        StringBuilder formatted = new StringBuilder();
+        if (hours > 0) {
+            formatted.append(hours).append(hours == 1 ? " hora " : " horas ");
+        }
+        if (hours > 0 || minutes > 0) {
+            formatted.append(minutes).append(minutes == 1 ? " minuto " : " minutos ");
+        }
+        formatted.append(seconds).append(seconds == 1 ? " segundo" : " segundos");
+        return formatted.toString();
     }
 }
