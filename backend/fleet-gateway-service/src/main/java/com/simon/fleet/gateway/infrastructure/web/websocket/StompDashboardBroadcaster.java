@@ -4,7 +4,7 @@ import com.simon.fleet.gateway.domain.model.Vehicle;
 import com.simon.fleet.gateway.domain.model.VehicleId;
 import com.simon.fleet.gateway.domain.port.out.AlertBroadcastPort;
 import com.simon.fleet.gateway.domain.port.out.FleetStatusBroadcastPort;
-import com.simon.fleet.gateway.infrastructure.web.VehicleResponseDto;
+import com.simon.fleet.gateway.infrastructure.web.dto.VehicleResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

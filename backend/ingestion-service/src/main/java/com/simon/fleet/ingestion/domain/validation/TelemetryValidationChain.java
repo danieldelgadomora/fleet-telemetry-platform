@@ -1,6 +1,6 @@
 package com.simon.fleet.ingestion.domain.validation;
 
-import com.simon.fleet.ingestion.domain.model.InvalidTelemetryPayloadException;
+import com.simon.fleet.ingestion.domain.exception.InvalidTelemetryPayloadException;
 import com.simon.fleet.ingestion.domain.model.TelemetryPoint;
 import lombok.RequiredArgsConstructor;
 
