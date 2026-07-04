@@ -1,6 +1,7 @@
 package com.simon.fleet.gateway.application;
 
 import com.simon.fleet.gateway.domain.model.Vehicle;
+import com.simon.fleet.gateway.domain.model.VehicleAlreadyRegisteredException;
 import com.simon.fleet.gateway.domain.model.VehicleId;
 import com.simon.fleet.gateway.domain.port.in.RegisterVehicleUseCase;
 import com.simon.fleet.gateway.domain.port.out.VehicleRepositoryPort;
@@ -19,11 +20,11 @@ public class RegisterVehicleService implements RegisterVehicleUseCase {
 
     @Override
     public Vehicle register(VehicleId vehicleId) {
-        return repositoryPort.findById(vehicleId)
-                .orElseGet(() -> {
-                    Vehicle vehicle = Vehicle.register(vehicleId, Instant.now(clock));
-                    repositoryPort.save(vehicle);
-                    return vehicle;
-                });
+        if (repositoryPort.findById(vehicleId).isPresent()) {
+            throw new VehicleAlreadyRegisteredException(vehicleId);
+        }
+        Vehicle vehicle = Vehicle.register(vehicleId, Instant.now(clock));
+        repositoryPort.save(vehicle);
+        return vehicle;
     }
 }

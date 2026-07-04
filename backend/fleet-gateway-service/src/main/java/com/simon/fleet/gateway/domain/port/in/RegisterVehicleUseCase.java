@@ -1,6 +1,7 @@
 package com.simon.fleet.gateway.domain.port.in;
 
 import com.simon.fleet.gateway.domain.model.Vehicle;
+import com.simon.fleet.gateway.domain.model.VehicleAlreadyRegisteredException;
 import com.simon.fleet.gateway.domain.model.VehicleId;
 
 /**
@@ -11,8 +12,9 @@ import com.simon.fleet.gateway.domain.model.VehicleId;
 public interface RegisterVehicleUseCase {
 
     /**
-     * Idempotente: si el vehículo ya existe, simplemente devuelve el registro existente en vez
-     * de fallar.
+     * @throws VehicleAlreadyRegisteredException si el vehículo ya existe en el registro
+     * (incluyendo el caso en que ya existía por haberse auto-registrado antes al reportar
+     * telemetría): el alta explícita nunca disfraza un duplicado de éxito.
      */
     Vehicle register(VehicleId vehicleId);
 }
