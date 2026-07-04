@@ -1,8 +1,8 @@
 package com.simon.fleet.ingestion.application;
 
+import com.simon.fleet.ingestion.domain.model.TelemetryIngestionResult;
 import com.simon.fleet.ingestion.domain.model.TelemetryPoint;
 import com.simon.fleet.ingestion.domain.port.in.IngestTelemetryUseCase;
-import com.simon.fleet.ingestion.domain.port.in.TelemetryIngestionResult;
 import com.simon.fleet.ingestion.domain.port.out.TelemetryCachePort;
 import com.simon.fleet.ingestion.domain.port.out.TelemetryDeduplicationPort;
 import com.simon.fleet.ingestion.domain.port.out.TelemetryEventPublisherPort;

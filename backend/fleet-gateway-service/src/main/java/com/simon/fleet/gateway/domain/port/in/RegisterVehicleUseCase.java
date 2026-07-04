@@ -1,7 +1,7 @@
 package com.simon.fleet.gateway.domain.port.in;
 
+import com.simon.fleet.gateway.domain.exception.VehicleAlreadyRegisteredException;
 import com.simon.fleet.gateway.domain.model.Vehicle;
-import com.simon.fleet.gateway.domain.model.VehicleAlreadyRegisteredException;
 import com.simon.fleet.gateway.domain.model.VehicleId;
 
 /**
