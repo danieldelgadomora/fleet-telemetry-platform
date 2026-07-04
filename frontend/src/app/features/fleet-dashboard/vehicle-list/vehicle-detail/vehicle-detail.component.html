@@ -1,0 +1,23 @@
+<div class="vehicle-detail">
+  <div class="vehicle-detail__header">
+    <span class="vehicle-detail__id">{{ vehicle.vehicleId }}</span>
+    <app-status-badge [presentation]="presentation" />
+  </div>
+
+  <dl class="vehicle-detail__fields">
+    <dt><mat-icon>place</mat-icon> Posición</dt>
+    <dd>
+      @if (tienePosicion) {
+        {{ vehicle.lastLat }}, {{ vehicle.lastLng }}
+      } @else {
+        Sin posición reportada
+      }
+    </dd>
+
+    <dt><mat-icon>schedule</mat-icon> Último reporte</dt>
+    <dd>{{ vehicle.lastReportedAt | relativeTime }}</dd>
+
+    <dt><mat-icon>event</mat-icon> Registrado</dt>
+    <dd>{{ vehicle.registeredAt | relativeTime }}</dd>
+  </dl>
+</div>
