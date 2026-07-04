@@ -1,7 +1,19 @@
 <section class="alerts-panel">
-  <h3 class="alerts-panel__title">Alertas recientes</h3>
+  <h3 class="alerts-panel__title">
+    @if (vehicleFiltrado(); as vehicle) {
+      Alertas de {{ vehicle.vehicleId }}
+    } @else {
+      Alertas recientes
+    }
+  </h3>
   @if (alerts().length === 0) {
-    <p class="alerts-panel__empty">Sin alertas por ahora.</p>
+    <p class="alerts-panel__empty">
+      @if (vehicleFiltrado()) {
+        Este vehículo no tiene alertas recientes.
+      } @else {
+        Sin alertas por ahora.
+      }
+    </p>
   } @else {
     <mat-list>
       @for (alerta of alerts(); track alerta.alertId) {
