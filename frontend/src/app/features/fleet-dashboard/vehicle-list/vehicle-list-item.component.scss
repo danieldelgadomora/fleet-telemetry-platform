@@ -1,0 +1,37 @@
+.vehicle-list-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--mat-sys-surface-container-high);
+  }
+}
+
+.vehicle-list-item--selected {
+  background: var(--mat-sys-secondary-container);
+
+  &:hover {
+    background: var(--mat-sys-secondary-container);
+  }
+}
+
+.vehicle-list-item__main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vehicle-list-item__id {
+  font-weight: 600;
+}
+
+.vehicle-list-item__time {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+  white-space: nowrap;
+}

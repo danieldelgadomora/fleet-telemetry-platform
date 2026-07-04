@@ -1,0 +1,84 @@
+// Tema global de la aplicación: se apoya en el tema Material generado en styles/theme.scss
+// (semilla teal/mint inspirada en la marca) y expone sus tokens de sistema (--mat-sys-*) para
+// que los componentes propios los reutilicen en vez de escribir colores sueltos.
+@use '@angular/material' as mat;
+@use './styles/theme' as apptheme;
+
+@include mat.core();
+
+:root {
+  @include mat.all-component-themes(apptheme.$dark-theme);
+  @include mat.system-level-colors(apptheme.$dark-theme);
+  @include mat.system-level-typography(apptheme.$dark-theme);
+
+  // Defensivo: la app es dark-only (sin toggle), así que se declara explícito para que
+  // controles nativos del navegador (scrollbars, inputs no estilizados) y el primer render
+  // antes de que cargue el CSS de Material no aparezcan claros.
+  color-scheme: dark;
+
+  // Colores de estado del negocio (movement_status / status del ciclo de vida del vehículo).
+  // Son fijos y nunca se derivan del tema de Material: codifican un significado (movimiento,
+  // detención, alerta), no la identidad de marca, y siempre van acompañados de ícono + texto.
+  --color-status-moving: #0ca30c;
+  --color-status-stopped: #fab219;
+  --color-status-alert: #d03b3b;
+  --color-status-serious: #ec835a;
+  --color-status-unknown: var(--mat-sys-outline);
+}
+
+// Clases globales (no encapsuladas): las usa tanto el badge de estado como los íconos de
+// marcador del mapa, que vive en el DOM propio de Leaflet, fuera del árbol de Angular.
+.status-moving { color: var(--color-status-moving); }
+.status-stopped { color: var(--color-status-stopped); }
+.status-alert { color: var(--color-status-alert); }
+.status-serious { color: var(--color-status-serious); }
+.status-unknown { color: var(--color-status-unknown); }
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  overflow: hidden; // sin scroll de página: cada panel maneja su propio scroll interno
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+}
+
+// Panel de éxito explícito para los toasts (MatSnackBar): los errores ya no pasan por aquí
+// (van a ErrorDialogComponent), así que este verde nunca se confunde con un error.
+.snackbar-success {
+  --mdc-snackbar-container-color: var(--color-status-moving);
+  --mdc-snackbar-supporting-text-color: #ffffff;
+}
+
+// Botones de acción destructiva/de error: color fijo con el mismo token que ALERTA, en vez de
+// depender de `color="warn"` de Material (en esta versión del tema M3 no emite CSS para el rol
+// warn de los botones — ver Notas de diseño en el README).
+.btn-danger {
+  --mdc-filled-button-container-color: var(--color-status-alert);
+  --mdc-filled-button-label-text-color: #ffffff;
+}
+
+.icon-btn-danger {
+  --mdc-icon-button-icon-color: var(--color-status-alert);
+}
+
+// Ícono de marcador del mapa (ver MarkerBuilder): Leaflet crea este DOM fuera del árbol de
+// Angular, por eso el estilo tiene que ser global en vez de vivir en fleet-map.component.scss.
+.vehicle-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+
+  .material-icons {
+    font-size: 20px;
+    background: var(--mat-sys-surface-container-high);
+    border-radius: 50%;
+    padding: 5px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  }
+}

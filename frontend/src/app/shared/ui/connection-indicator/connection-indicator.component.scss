@@ -1,0 +1,33 @@
+.connection-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--mat-sys-outline);
+}
+
+.is-conectado .dot {
+  background: var(--mat-sys-primary);
+}
+
+.is-conectando .dot {
+  background: var(--mat-sys-outline);
+  animation: parpadeo 1s ease-in-out infinite;
+}
+
+.is-desconectado .dot {
+  background: var(--mat-sys-error);
+}
+
+@keyframes parpadeo {
+  50% {
+    opacity: 0.3;
+  }
+}

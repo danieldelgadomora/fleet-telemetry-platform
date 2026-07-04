@@ -1,0 +1,17 @@
+<section class="alerts-panel">
+  <h3 class="alerts-panel__title">Alertas recientes</h3>
+  @if (alerts().length === 0) {
+    <p class="alerts-panel__empty">Sin alertas por ahora.</p>
+  } @else {
+    <mat-list>
+      @for (alerta of alerts(); track alerta.alertId) {
+        <mat-list-item>
+          <mat-icon matListItemIcon class="status-alert">warning</mat-icon>
+          <div matListItemTitle>{{ alerta.vehicleId }}</div>
+          <div matListItemLine>{{ alerta.message }}</div>
+          <div matListItemLine class="alerts-panel__time">{{ alerta.raisedAt | relativeTime }}</div>
+        </mat-list-item>
+      }
+    </mat-list>
+  }
+</section>
