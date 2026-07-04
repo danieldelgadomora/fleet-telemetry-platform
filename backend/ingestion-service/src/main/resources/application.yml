@@ -1,0 +1,58 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: ingestion-service
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/fleet_telemetry
+    redis:
+      host: localhost
+      port: 6379
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+# Reglas de negocio de ingestion-service (ver domain.validation y cache.redis).
+ingestion:
+  dedupe:
+    window-seconds: 10 # dos lecturas identicas dentro de esta ventana se consideran duplicadas
+    ttl-seconds: 15
+  cache:
+    last-position-ttl-seconds: 300
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      mongoTelemetry:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+  retry:
+    instances:
+      mongoTelemetry:
+        max-attempts: 3
+        wait-duration: 500ms
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,circuitbreakers
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.simon.fleet: DEBUG

@@ -1,0 +1,43 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: alerting-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fleet_telemetry
+    username: fleet
+    password: fleet
+  jpa:
+    hibernate:
+      ddl-auto: validate # el esquema lo crea Flyway, no Hibernate
+    open-in-view: false
+  flyway:
+    enabled: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+# Regla de negocio: cuanto tiempo en la misma coordenada se considera "vehiculo detenido".
+alerting:
+  stopped-vehicle:
+    threshold: 1m
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.simon.fleet: DEBUG
