@@ -1,0 +1,20 @@
+<mat-toolbar class="dashboard-header">
+  <span class="dashboard-header__brand">Sim<span class="dashboard-header__accent">ó</span>n</span>
+  <span class="dashboard-header__subtitle">Monitoreo de flota</span>
+
+  <span class="dashboard-header__spacer"></span>
+
+  <div class="dashboard-header__stats">
+    <app-stat-tile [value]="stats().total" label="Vehículos" icon="local_shipping" />
+    <app-stat-tile
+      [value]="stats().enMovimiento"
+      label="En movimiento"
+      icon="directions_car"
+      cssClass="status-moving"
+    />
+    <app-stat-tile [value]="stats().detenido" label="Detenidos" icon="pause_circle" cssClass="status-stopped" />
+    <app-stat-tile [value]="stats().alerta" label="En alerta" icon="warning" cssClass="status-alert" />
+  </div>
+
+  <app-connection-indicator [status]="connectionStatus()" />
+</mat-toolbar>

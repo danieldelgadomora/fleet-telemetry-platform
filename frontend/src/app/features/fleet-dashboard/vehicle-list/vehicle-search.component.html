@@ -1,0 +1,31 @@
+<section class="vehicle-search">
+  <div class="vehicle-search__toolbar">
+    <mat-form-field appearance="outline" class="vehicle-search__field" subscriptSizing="dynamic">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>Buscar por id</mat-label>
+      <input matInput [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" placeholder="ej. v1" />
+    </mat-form-field>
+    <button mat-flat-button color="primary" (click)="abrirRegistro()">
+      <mat-icon>add</mat-icon>
+      Registrar
+    </button>
+  </div>
+
+  <p class="vehicle-search__count">
+    {{ filteredVehicles().length }} vehículo{{ filteredVehicles().length === 1 ? '' : 's' }}
+  </p>
+
+  <div class="vehicle-search__list">
+    @for (vehicle of filteredVehicles(); track vehicle.vehicleId) {
+      <app-vehicle-list-item [vehicle]="vehicle" />
+    } @empty {
+      <p class="vehicle-search__empty">Sin vehículos que coincidan con la búsqueda.</p>
+    }
+  </div>
+
+  @if (selectedVehicle(); as vehicle) {
+    <app-vehicle-detail [vehicle]="vehicle" />
+  } @else {
+    <p class="vehicle-search__hint">Selecciona un vehículo de la lista para ver su información.</p>
+  }
+</section>

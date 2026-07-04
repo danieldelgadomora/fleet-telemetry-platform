@@ -16,9 +16,8 @@
     <name>fleet-gateway-service</name>
     <description>
         BFF del dashboard: registro y borrado de vehiculos, orquestador del Saga de eliminacion
-        (consistencia eventual entre ingestion-service y alerting-service). El WebSocket/STOMP
-        para el dashboard en tiempo real llega en una fase posterior; este modulo por ahora solo
-        resuelve "Transacciones y Consistencia".
+        (consistencia eventual entre ingestion-service y alerting-service), vista de lectura
+        CQRS y push en tiempo real por WebSocket/STOMP hacia el dashboard.
     </description>
 
     <dependencies>
@@ -30,6 +29,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

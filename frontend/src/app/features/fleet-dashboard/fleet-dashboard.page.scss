@@ -1,0 +1,44 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.fleet-dashboard__body {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 400px);
+  min-height: 0;
+}
+
+.fleet-dashboard__map {
+  min-width: 0;
+}
+
+.fleet-dashboard__sidebar {
+  display: grid;
+  grid-template-rows: minmax(0, 2fr) minmax(140px, 200px);
+  min-height: 0;
+  border-left: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface-container-low);
+}
+
+.fleet-dashboard__vehicles,
+.fleet-dashboard__alerts {
+  min-height: 0;
+}
+
+// En pantallas angostas (tablet/móvil) el mapa y el sidebar no caben lado a lado: se apilan,
+// con el mapa arriba a una altura acotada y el sidebar debajo con su propio scroll.
+@media (max-width: 900px) {
+  .fleet-dashboard__body {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(220px, 40vh) 1fr;
+  }
+
+  .fleet-dashboard__sidebar {
+    border-left: none;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+  }
+}

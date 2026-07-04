@@ -1,0 +1,20 @@
+<div
+  class="vehicle-list-item"
+  [class.vehicle-list-item--selected]="isSelected"
+  (click)="seleccionar()"
+>
+  <div class="vehicle-list-item__main">
+    <span class="vehicle-list-item__id">{{ vehicle.vehicleId }}</span>
+    <app-status-badge [presentation]="presentation" />
+  </div>
+  <span class="vehicle-list-item__time">{{ vehicle.lastReportedAt | relativeTime }}</span>
+  <button
+    mat-icon-button
+    class="icon-btn-danger"
+    [disabled]="!puedeEliminarse"
+    (click)="$event.stopPropagation(); eliminar()"
+    aria-label="Eliminar vehículo"
+  >
+    <mat-icon>delete</mat-icon>
+  </button>
+</div>
