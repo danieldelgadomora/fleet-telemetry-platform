@@ -1,4 +1,4 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { ChangeDetectorRef, OnDestroy, Pipe, PipeTransform } from '@angular/core';
 
 /**
  * Muestra una marca de tiempo ISO-8601 como tiempo relativo en español (ej. "hace 12 s",
@@ -9,7 +9,20 @@ import { Pipe, PipeTransform } from '@angular/core';
   standalone: true,
   pure: false, // el valor debe recalcularse en cada detección de cambios, no solo cuando cambia el input
 })
-export class RelativeTimePipe implements PipeTransform {
+export class RelativeTimePipe implements PipeTransform, OnDestroy {
+  // Los componentes que usan este pipe son OnPush: sin este intervalo, Angular solo repinta
+  // el texto cuando llega un dato nuevo (push por WebSocket, clic, etc.), y el "hace X s"
+  // queda congelado entre un dato y el siguiente en vez de avanzar con el reloj.
+  private readonly intervalId: ReturnType<typeof setInterval>;
+
+  constructor(private readonly changeDetectorRef: ChangeDetectorRef) {
+    this.intervalId = setInterval(() => this.changeDetectorRef.markForCheck(), 1000);
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.intervalId);
+  }
+
   transform(value: string | null): string {
     if (!value) {
       return 'sin datos';
