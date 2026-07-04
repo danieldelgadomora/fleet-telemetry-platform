@@ -13,7 +13,9 @@ import org.springframework.stereotype.Component;
  * reenvía la alerta en tiempo real por WebSocket/STOMP. Primero se actualiza el estado (empuja
  * {@code /topic/fleet}) y luego se notifica la alerta puntual ({@code /topic/alerts}), para que
  * un cliente que reaccione a la notificación consultando el estado agregado ya lo encuentre
- * consistente.
+ * consistente. El historial de la alerta ya queda persistido por alerting-service en su propia
+ * tabla {@code alerts}; el dashboard lo consulta directamente desde ahí (ver
+ * {@code JdbcAlertRepositoryAdapter}), así que este consumer no necesita guardar nada más.
  */
 @Component
 @RequiredArgsConstructor

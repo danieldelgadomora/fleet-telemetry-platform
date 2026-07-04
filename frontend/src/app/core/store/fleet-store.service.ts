@@ -2,6 +2,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { Alert, AlertDto, mapAlertDto } from '../models/alert.model';
 import { mapVehicleDto, Vehicle, VehicleDto } from '../models/vehicle.model';
+import { AlertApiService } from '../http/alert-api.service';
 import { VehicleApiService } from '../http/vehicle-api.service';
 import { REALTIME_CLIENT } from '../realtime/realtime-client.token';
 
@@ -24,6 +25,7 @@ export interface FleetStats {
 @Injectable({ providedIn: 'root' })
 export class FleetStoreService {
   private readonly vehicleApi = inject(VehicleApiService);
+  private readonly alertApi = inject(AlertApiService);
   private readonly realtimeClient = inject(REALTIME_CLIENT);
 
   private readonly _vehicles = signal<Vehicle[]>([]);
@@ -55,11 +57,14 @@ export class FleetStoreService {
   });
 
   /**
-   * Carga el listado inicial por REST y abre el canal en tiempo real. Se llama una única vez,
-   * al arrancar el shell de la aplicación.
+   * Carga el listado inicial por REST (vehículos y alertas recientes) y abre el canal en
+   * tiempo real. Se llama una única vez, al arrancar el shell de la aplicación — sin la carga
+   * inicial de alertas, el panel arrancaría vacío en cada recarga hasta la próxima alerta en
+   * vivo, aunque ya existan alertas recientes en el historial.
    */
   init(): void {
     this.vehicleApi.list().subscribe((vehicles) => this._vehicles.set(vehicles));
+    this.alertApi.listRecent().subscribe((alerts) => this._alerts.set(alerts));
     this.realtimeClient.subscribe<VehicleDto>('/topic/fleet', (dto) =>
       this.applyVehicleUpdate(mapVehicleDto(dto)),
     );
