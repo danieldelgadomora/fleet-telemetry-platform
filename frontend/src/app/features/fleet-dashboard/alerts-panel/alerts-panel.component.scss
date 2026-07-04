@@ -29,3 +29,23 @@ mat-list {
   min-height: 0;
   overflow-y: auto;
 }
+
+// mat-list-item viene pensado para texto corto de una sola línea (altura fija, sin wrap); un
+// mensaje de alerta largo necesita poder crecer y ajustarse en vez de cortarse. El contenido
+// interno de Material (`.mdc-list-item__content`) no es parte de la plantilla de este
+// componente, por eso hace falta ::ng-deep para alcanzarlo.
+:host ::ng-deep mat-list-item {
+  height: auto !important;
+  align-items: flex-start;
+  padding-block: 10px;
+}
+
+:host ::ng-deep .mdc-list-item__content,
+:host ::ng-deep .mat-mdc-list-item-line,
+:host ::ng-deep .mat-mdc-list-item-title {
+  height: auto !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  line-height: 1.3;
+}
