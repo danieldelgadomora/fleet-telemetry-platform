@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 /**
@@ -33,7 +35,12 @@ public class JdbcAlertRepositoryAdapter implements AlertRepositoryPort {
                 new VehicleId(rs.getString("vehicle_id")),
                 rs.getString("rule_code"),
                 rs.getString("message"),
-                rs.getTimestamp("raised_at").toInstant()
+                // La columna es `timestamp without time zone` pero guarda hora UTC (así la
+                // escribe alerting-service): rs.getTimestamp(...).toInstant() interpretaría ese
+                // valor naive en la zona horaria por defecto de la JVM, desplazando la hora real.
+                // Leer como LocalDateTime e interpretarlo explícitamente como UTC evita esa
+                // ambigüedad de zona horaria del driver JDBC.
+                rs.getObject("raised_at", LocalDateTime.class).toInstant(ZoneOffset.UTC)
         ), limit);
     }
 }
