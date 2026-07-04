@@ -43,7 +43,11 @@ public class VehicleController {
     private final ListActiveVehiclesUseCase listActiveVehiclesUseCase;
 
     @PostMapping
-    @Operation(summary = "Registra un vehículo (idempotente)")
+    @Operation(summary = "Registra un vehículo")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Vehículo registrado"),
+            @ApiResponse(responseCode = "409", description = "El vehículo ya estaba registrado")
+    })
     public ResponseEntity<VehicleResponseDto> register(@RequestBody RegisterVehicleRequestDto request) {
         Vehicle vehicle = registerVehicleUseCase.register(new VehicleId(request.vehicleId()));
         return ResponseEntity.status(HttpStatus.CREATED).body(VehicleResponseMapper.toDto(vehicle));

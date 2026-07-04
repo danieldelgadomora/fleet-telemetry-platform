@@ -1,6 +1,7 @@
 package com.simon.fleet.gateway.infrastructure.web;
 
 import com.simon.fleet.gateway.domain.model.InvalidVehicleStateException;
+import com.simon.fleet.gateway.domain.model.VehicleAlreadyRegisteredException;
 import com.simon.fleet.gateway.domain.model.VehicleNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidVehicleStateException.class)
     public ResponseEntity<Map<String, Object>> handleInvalidState(InvalidVehicleStateException ex) {
+        return body(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(VehicleAlreadyRegisteredException.class)
+    public ResponseEntity<Map<String, Object>> handleAlreadyRegistered(VehicleAlreadyRegisteredException ex) {
         return body(HttpStatus.CONFLICT, ex.getMessage());
     }
 
