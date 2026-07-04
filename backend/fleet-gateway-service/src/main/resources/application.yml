@@ -1,0 +1,43 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: fleet-gateway-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fleet_telemetry
+    username: fleet
+    password: fleet
+  jpa:
+    hibernate:
+      ddl-auto: validate # el esquema lo crea Flyway, no Hibernate
+    open-in-view: false
+  flyway:
+    enabled: true
+    # Tabla de historial propia: esta BD la comparte con alerting-service, y cada uno debe
+    # llevar su propio control de versiones de esquema sin pisarse.
+    table: flyway_schema_history_gateway
+    # El esquema "public" ya tiene tablas de alerting-service; baseline-on-migrate le dice a
+    # Flyway que eso es esperado (no un esquema ajeno sin gestionar). baseline-version en 0
+    # (menor que V1) es necesario para que V1__create_vehicles_table.sql SI se ejecute despues
+    # del baseline, en vez de darla por aplicada.
+    baseline-on-migrate: true
+    baseline-version: 0
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.simon.fleet: DEBUG

@@ -1,0 +1,71 @@
+package com.simon.fleet.ingestion.infrastructure.cache.redis;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.simon.fleet.ingestion.domain.model.TelemetryPoint;
+import com.simon.fleet.ingestion.domain.model.VehicleId;
+import com.simon.fleet.ingestion.domain.port.out.TelemetryCachePort;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Component;
+
+import java.time.Duration;
+import java.util.Collection;
+import java.util.Optional;
+
+/**
+ * Adaptador Redis para "última posición conocida" por vehículo. Guarda el {@link TelemetryPoint}
+ * serializado como JSON bajo una clave con TTL corto: si el vehículo deja de reportar, su
+ * última posición simplemente expira sola.
+ */
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class RedisTelemetryCacheAdapter implements TelemetryCachePort {
+
+    private final StringRedisTemplate redisTemplate;
+    private final ObjectMapper objectMapper;
+
+    @Value("${ingestion.cache.last-position-ttl-seconds:300}")
+    private long lastPositionTtlSeconds;
+
+    @Override
+    public Optional<TelemetryPoint> findLastKnownPosition(VehicleId vehicleId) {
+        String json = redisTemplate.opsForValue().get(RedisKeys.lastPosition(vehicleId));
+        if (json == null) {
+            return Optional.empty();
+        }
+        try {
+            return Optional.of(objectMapper.readValue(json, TelemetryPoint.class));
+        } catch (JsonProcessingException e) {
+            log.warn("No se pudo deserializar la última posición cacheada de {}", vehicleId, e);
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public void saveLastKnownPosition(TelemetryPoint point) {
+        try {
+            String json = objectMapper.writeValueAsString(point);
+            redisTemplate.opsForValue().set(
+                    RedisKeys.lastPosition(point.vehicleId()), json, Duration.ofSeconds(lastPositionTtlSeconds));
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("No se pudo serializar el TelemetryPoint para cachearlo", e);
+        }
+    }
+
+    @Override
+    public void clearVehicleCache(VehicleId vehicleId) {
+        redisTemplate.delete(RedisKeys.lastPosition(vehicleId));
+
+        // KEYS bloquea el servidor si hay millones de claves; para el volumen de este
+        // prototipo es aceptable, pero en producción esto se reemplazaría por un SCAN
+        // incremental (Cursor) para no afectar la latencia de otros clientes de Redis.
+        Collection<String> dedupeKeys = redisTemplate.keys(RedisKeys.dedupePattern(vehicleId));
+        if (dedupeKeys != null && !dedupeKeys.isEmpty()) {
+            redisTemplate.delete(dedupeKeys);
+        }
+    }
+}
