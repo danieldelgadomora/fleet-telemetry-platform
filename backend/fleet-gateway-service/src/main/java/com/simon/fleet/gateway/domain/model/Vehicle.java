@@ -1,5 +1,6 @@
 package com.simon.fleet.gateway.domain.model;
 
+import com.simon.fleet.gateway.domain.exception.InvalidVehicleStateException;
 import lombok.Getter;
 
 import java.time.Instant;
