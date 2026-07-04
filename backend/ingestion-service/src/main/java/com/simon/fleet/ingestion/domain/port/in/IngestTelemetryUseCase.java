@@ -1,6 +1,7 @@
 package com.simon.fleet.ingestion.domain.port.in;
 
-import com.simon.fleet.ingestion.domain.model.InvalidTelemetryPayloadException;
+import com.simon.fleet.ingestion.domain.exception.InvalidTelemetryPayloadException;
+import com.simon.fleet.ingestion.domain.model.TelemetryIngestionResult;
 import com.simon.fleet.ingestion.domain.model.TelemetryPoint;
 
 /**

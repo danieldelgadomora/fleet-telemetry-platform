@@ -1,9 +1,9 @@
 package com.simon.fleet.gateway.domain.port.in;
 
-import com.simon.fleet.gateway.domain.model.InvalidVehicleStateException;
+import com.simon.fleet.gateway.domain.exception.InvalidVehicleStateException;
+import com.simon.fleet.gateway.domain.exception.VehicleNotFoundException;
 import com.simon.fleet.gateway.domain.model.Vehicle;
 import com.simon.fleet.gateway.domain.model.VehicleId;
-import com.simon.fleet.gateway.domain.model.VehicleNotFoundException;
 
 /**
  * Puerto de entrada (driving): arranca la Saga de eliminación de un vehículo (orquestador).
