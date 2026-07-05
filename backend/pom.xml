@@ -27,6 +27,7 @@
         <resilience4j.version>2.2.0</resilience4j.version>
         <lombok.version>1.18.34</lombok.version>
         <springdoc.version>2.6.0</springdoc.version>
+        <jacoco.version>0.8.12</jacoco.version>
     </properties>
 
     <!--
@@ -73,6 +74,30 @@
     </dependencyManagement>
 
     <build>
+        <plugins>
+            <!-- En <plugins> (no <pluginManagement>) para que se herede y ejecute
+                 automaticamente en los 4 modulos sin que cada uno tenga que declararlo:
+                 genera la cobertura que despues lee el analisis de SonarCloud en CI. -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
         <pluginManagement>
             <plugins>
                 <plugin>

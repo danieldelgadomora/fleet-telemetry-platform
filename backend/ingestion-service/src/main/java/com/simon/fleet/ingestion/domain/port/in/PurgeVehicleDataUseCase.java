@@ -5,7 +5,7 @@ import com.simon.fleet.ingestion.domain.model.VehiclePlate;
 /**
  * Puerto de entrada (driving): participante de la Saga coreografiada de borrado de vehículo
  * (ver README, sección "Transacciones y Consistencia"). Al recibir
- * {@code VehicleDeletionRequestedEvent}, este servicio limpia todo lo que le pertenece (caché
+ * {@code VehicleDeletionRequestedEvent}, este servicio limpia cuanto le pertenece (caché
  * Redis + histórico Mongo) y publica su propia confirmación. No conoce ni le importa quién
  * más participa en la Saga.
  */

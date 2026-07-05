@@ -12,7 +12,6 @@ import com.simon.fleet.gateway.infrastructure.web.dto.VehicleResponseDto;
 import com.simon.fleet.gateway.infrastructure.web.mapper.VehicleResponseMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -47,10 +46,8 @@ public class VehicleController {
 
     @PostMapping
     @Operation(summary = "Registra un vehículo")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Vehículo registrado"),
-            @ApiResponse(responseCode = "409", description = "El vehículo ya estaba registrado")
-    })
+    @ApiResponse(responseCode = "201", description = "Vehículo registrado")
+    @ApiResponse(responseCode = "409", description = "El vehículo ya estaba registrado")
     public ResponseEntity<VehicleResponseDto> register(@RequestBody RegisterVehicleRequestDto request) {
         Vehicle vehicle = registerVehicleUseCase.register(new VehiclePlate(request.plate()));
         return ResponseEntity.status(HttpStatus.CREATED).body(VehicleResponseMapper.toDto(vehicle));
@@ -67,10 +64,8 @@ public class VehicleController {
 
     @GetMapping("/{plate}")
     @Operation(summary = "Consulta el estado de un vehículo (útil para ver avanzar la Saga)")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Vehículo encontrado"),
-            @ApiResponse(responseCode = "404", description = "Vehículo no registrado")
-    })
+    @ApiResponse(responseCode = "200", description = "Vehículo encontrado")
+    @ApiResponse(responseCode = "404", description = "Vehículo no registrado")
     public ResponseEntity<VehicleResponseDto> findById(@PathVariable String plate) {
         Vehicle vehicle = findVehicleUseCase.findById(new VehiclePlate(plate))
                 .orElseThrow(() -> new VehicleNotFoundException(new VehiclePlate(plate)));
@@ -87,11 +82,9 @@ public class VehicleController {
                     consulta GET /{plate} para ver el avance.
                     """
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "202", description = "Borrado solicitado, en progreso"),
-            @ApiResponse(responseCode = "404", description = "Vehículo no registrado"),
-            @ApiResponse(responseCode = "409", description = "El vehículo no está ACTIVE (ya se pidió su borrado o ya fue borrado)")
-    })
+    @ApiResponse(responseCode = "202", description = "Borrado solicitado, en progreso")
+    @ApiResponse(responseCode = "404", description = "Vehículo no registrado")
+    @ApiResponse(responseCode = "409", description = "El vehículo no está ACTIVE (ya se pidió su borrado o ya fue borrado)")
     public ResponseEntity<VehicleResponseDto> requestDeletion(@PathVariable String plate) {
         Vehicle vehicle = deleteVehicleUseCase.requestDeletion(new VehiclePlate(plate));
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(VehicleResponseMapper.toDto(vehicle));

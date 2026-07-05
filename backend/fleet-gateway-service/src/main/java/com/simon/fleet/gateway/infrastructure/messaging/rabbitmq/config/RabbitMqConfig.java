@@ -56,6 +56,8 @@ public class RabbitMqConfig {
     public static final String FLEET_STATUS_ALERT_DLQ = "gateway.fleet-status.alert.dlq";
     private static final String FLEET_STATUS_ALERT_DLX = "gateway.fleet-status.alert.dlx";
 
+    private static final String DEAD_LETTER_EXCHANGE_ARG = "x-dead-letter-exchange";
+
     @Bean
     public MessageConverter messageConverter() {
         return new Jackson2JsonMessageConverter();
@@ -94,7 +96,7 @@ public class RabbitMqConfig {
     @Bean
     public Queue vehicleCacheClearedQueue() {
         return QueueBuilder.durable(CACHE_CLEARED_QUEUE)
-                .withArgument("x-dead-letter-exchange", CACHE_CLEARED_DLX)
+                .withArgument(DEAD_LETTER_EXCHANGE_ARG, CACHE_CLEARED_DLX)
                 .build();
     }
 
@@ -123,7 +125,7 @@ public class RabbitMqConfig {
     @Bean
     public Queue vehicleDataPurgedQueue() {
         return QueueBuilder.durable(DATA_PURGED_QUEUE)
-                .withArgument("x-dead-letter-exchange", DATA_PURGED_DLX)
+                .withArgument(DEAD_LETTER_EXCHANGE_ARG, DATA_PURGED_DLX)
                 .build();
     }
 
@@ -157,7 +159,7 @@ public class RabbitMqConfig {
     @Bean
     public Queue fleetStatusTelemetryQueue() {
         return QueueBuilder.durable(FLEET_STATUS_TELEMETRY_QUEUE)
-                .withArgument("x-dead-letter-exchange", FLEET_STATUS_TELEMETRY_DLX)
+                .withArgument(DEAD_LETTER_EXCHANGE_ARG, FLEET_STATUS_TELEMETRY_DLX)
                 .build();
     }
 
@@ -186,7 +188,7 @@ public class RabbitMqConfig {
     @Bean
     public Queue fleetStatusAlertQueue() {
         return QueueBuilder.durable(FLEET_STATUS_ALERT_QUEUE)
-                .withArgument("x-dead-letter-exchange", FLEET_STATUS_ALERT_DLX)
+                .withArgument(DEAD_LETTER_EXCHANGE_ARG, FLEET_STATUS_ALERT_DLX)
                 .build();
     }
 

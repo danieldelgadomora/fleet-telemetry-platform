@@ -11,8 +11,8 @@ import java.util.Optional;
  * Puerto de salida (driven) de persistencia del registro de vehículos (PostgreSQL). Las dos
  * confirmaciones de la Saga ({@code markCacheCleared} y {@code markDataPurged}) llegan de dos
  * consumers de RabbitMQ distintos que pueden ejecutarse casi al mismo tiempo; por eso son
- * actualizaciones SQL atómicas (columna suelta) en vez de "leer todo el vehículo, modificar en
- * Java, guardar todo el vehículo", que perdería una de las dos escrituras si llegan
+ * actualizaciones SQL atómicas (columna suelta) en vez de "leer el vehículo completo, modificar
+ * en Java, guardar el vehículo completo", que perdería una de las dos escrituras si llegan
  * concurrentes.
  */
 public interface VehicleRepositoryPort {

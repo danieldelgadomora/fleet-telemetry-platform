@@ -7,7 +7,6 @@ import com.simon.fleet.ingestion.infrastructure.web.dto.PanicResponseDto;
 import com.simon.fleet.ingestion.infrastructure.web.mapper.PanicRequestMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -40,10 +39,8 @@ public class PanicController {
                     alertas igual que cualquier otra alerta.
                     """
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "202", description = "Activación registrada"),
-            @ApiResponse(responseCode = "400", description = "Payload inválido: placa faltante o timestamp no parseable")
-    })
+    @ApiResponse(responseCode = "202", description = "Activación registrada")
+    @ApiResponse(responseCode = "400", description = "Payload inválido: placa faltante o timestamp no parseable")
     public ResponseEntity<PanicResponseDto> trigger(@RequestBody PanicRequestDto request) {
         PanicButtonPress press = PanicRequestMapper.toDomain(request);
         triggerPanicButtonUseCase.trigger(press);
