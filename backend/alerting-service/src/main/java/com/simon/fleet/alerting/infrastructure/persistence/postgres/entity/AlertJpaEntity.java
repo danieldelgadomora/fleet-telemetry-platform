@@ -27,8 +27,8 @@ public class AlertJpaEntity {
     @Id
     private String id;
 
-    @Column(name = "vehicle_id", nullable = false)
-    private String vehicleId;
+    @Column(name = "plate", nullable = false)
+    private String plate;
 
     @Column(name = "rule_code", nullable = false)
     private String ruleCode;

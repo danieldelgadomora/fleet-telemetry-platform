@@ -33,13 +33,13 @@ def _outcome_key(result: SendResult) -> str:
     return "connection_error" if result.error is not None else str(result.status_code)
 
 
-def log_request(vehicle_id: str, label: str, result: SendResult, stats: Stats) -> None:
+def log_request(plate: str, label: str, result: SendResult, stats: Stats) -> None:
     """Registra un request en el log de consola y acumula sus contadores para el resumen final."""
     stats.sent_by_label[label] += 1
     stats.outcomes[_outcome_key(result)] += 1
 
     if result.error is not None:
-        logger.error("[%s] chaos=%-22s -> error de conexión: %s", vehicle_id, label, result.error)
+        logger.error("[%s] chaos=%-22s -> error de conexión: %s", plate, label, result.error)
         return
 
     note = "  [duplicado intencional — verificar en Mongo, no por status]" if label == "duplicate" else ""
@@ -47,7 +47,7 @@ def log_request(vehicle_id: str, label: str, result: SendResult, stats: Stats) -
     logger.log(
         level,
         "[%s] chaos=%-22s -> %s (%.0fms)%s",
-        vehicle_id,
+        plate,
         label,
         result.status_code,
         result.elapsed_ms,

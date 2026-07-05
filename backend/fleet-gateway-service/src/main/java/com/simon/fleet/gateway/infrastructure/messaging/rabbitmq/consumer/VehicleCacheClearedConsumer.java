@@ -2,7 +2,7 @@ package com.simon.fleet.gateway.infrastructure.messaging.rabbitmq.consumer;
 
 import com.simon.fleet.contracts.lifecycle.VehicleCacheClearedEvent;
 import com.simon.fleet.gateway.domain.port.in.HandleCacheClearedUseCase;
-import com.simon.fleet.gateway.domain.model.VehicleId;
+import com.simon.fleet.gateway.domain.model.VehiclePlate;
 import com.simon.fleet.gateway.infrastructure.messaging.rabbitmq.config.RabbitMqConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -17,6 +17,6 @@ public class VehicleCacheClearedConsumer {
 
     @RabbitListener(queues = RabbitMqConfig.CACHE_CLEARED_QUEUE)
     public void onCacheCleared(VehicleCacheClearedEvent event) {
-        handleCacheClearedUseCase.onCacheCleared(new VehicleId(event.vehicleId()), event.clearedAt());
+        handleCacheClearedUseCase.onCacheCleared(new VehiclePlate(event.plate()), event.clearedAt());
     }
 }

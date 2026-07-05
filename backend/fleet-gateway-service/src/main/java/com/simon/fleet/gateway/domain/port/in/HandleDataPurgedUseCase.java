@@ -1,6 +1,6 @@
 package com.simon.fleet.gateway.domain.port.in;
 
-import com.simon.fleet.gateway.domain.model.VehicleId;
+import com.simon.fleet.gateway.domain.model.VehiclePlate;
 
 import java.time.Instant;
 
@@ -12,5 +12,5 @@ import java.time.Instant;
 public interface HandleDataPurgedUseCase {
 
     /** Idempotente: seguro de llamar más de una vez para el mismo vehículo. */
-    void onDataPurged(VehicleId vehicleId, Instant purgedAt);
+    void onDataPurged(VehiclePlate plate, Instant purgedAt);
 }

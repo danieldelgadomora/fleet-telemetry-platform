@@ -39,7 +39,7 @@ public class StoppedVehicleRule implements AlertRule {
         if (!sameLocationAsBefore) {
             // Coordenada nueva (o primera lectura del vehículo): reinicia el "reloj" de detenido.
             VehicleTrackingState resetState =
-                    new VehicleTrackingState(reading.vehicleId(), reading.coordinates(), reading.recordedAt());
+                    new VehicleTrackingState(reading.plate(), reading.coordinates(), reading.recordedAt());
             return new AlertEvaluationResult(resetState, Optional.empty());
         }
 
@@ -52,10 +52,10 @@ public class StoppedVehicleRule implements AlertRule {
 
         Alert alert = Alert.builder()
                 .alertId(UUID.randomUUID().toString())
-                .vehicleId(reading.vehicleId())
+                .plate(reading.plate())
                 .ruleCode(RULE_CODE)
                 .message("Vehículo %s detenido en la misma posición desde hace %s"
-                        .formatted(reading.vehicleId().value(), formatDuration(stoppedFor)))
+                        .formatted(reading.plate().value(), formatDuration(stoppedFor)))
                 .raisedAt(reading.recordedAt())
                 .build();
 

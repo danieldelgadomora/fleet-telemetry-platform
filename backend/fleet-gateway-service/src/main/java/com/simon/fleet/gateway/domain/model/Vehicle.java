@@ -20,7 +20,7 @@ import java.time.Instant;
 @Getter
 public class Vehicle {
 
-    private final VehicleId id;
+    private final VehiclePlate id;
     private VehicleStatus status;
     private final Instant registeredAt;
     private Instant cacheClearedAt;
@@ -30,7 +30,7 @@ public class Vehicle {
     private Instant lastReportedAt;
     private MovementStatus movementStatus;
 
-    private Vehicle(VehicleId id, VehicleStatus status, Instant registeredAt,
+    private Vehicle(VehiclePlate id, VehicleStatus status, Instant registeredAt,
                      Instant cacheClearedAt, Instant dataPurgedAt,
                      Double lastLat, Double lastLng, Instant lastReportedAt, MovementStatus movementStatus) {
         this.id = id;
@@ -44,12 +44,12 @@ public class Vehicle {
         this.movementStatus = movementStatus;
     }
 
-    public static Vehicle register(VehicleId id, Instant now) {
+    public static Vehicle register(VehiclePlate id, Instant now) {
         return new Vehicle(id, VehicleStatus.ACTIVE, now, null, null, null, null, null, null);
     }
 
     /** Reconstruye un vehículo ya existente desde el almacén de persistencia. */
-    public static Vehicle rehydrate(VehicleId id, VehicleStatus status, Instant registeredAt,
+    public static Vehicle rehydrate(VehiclePlate id, VehicleStatus status, Instant registeredAt,
                                      Instant cacheClearedAt, Instant dataPurgedAt,
                                      Double lastLat, Double lastLng, Instant lastReportedAt,
                                      MovementStatus movementStatus) {

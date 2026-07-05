@@ -8,5 +8,5 @@ import java.time.Instant;
  * vehículo lleva más de un minuto "sin moverse". Vive en Redis (namespace propio de
  * alerting-service) para sobrevivir a reinicios del servicio.
  */
-public record VehicleTrackingState(VehicleId vehicleId, Coordinates coordinates, Instant since) {
+public record VehicleTrackingState(VehiclePlate plate, Coordinates coordinates, Instant since) {
 }

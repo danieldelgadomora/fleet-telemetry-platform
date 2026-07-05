@@ -30,7 +30,7 @@ export class FleetStoreService {
 
   private readonly _vehicles = signal<Vehicle[]>([]);
   private readonly _alerts = signal<Alert[]>([]);
-  private readonly _selectedVehicleId = signal<string | null>(null);
+  private readonly _selectedPlate = signal<string | null>(null);
 
   /** Vehículos activos y su último estado conocido. */
   readonly vehicles = this._vehicles.asReadonly();
@@ -38,11 +38,11 @@ export class FleetStoreService {
   readonly alerts = this._alerts.asReadonly();
   /** Estado de la conexión en tiempo real, para el indicador de conexión del header. */
   readonly connectionStatus = this.realtimeClient.connectionStatus;
-  /** Id del vehículo seleccionado en el listado, para enfocarlo en el mapa y ver su detalle. */
-  readonly selectedVehicleId = this._selectedVehicleId.asReadonly();
+  /** Placa del vehículo seleccionado en el listado, para enfocarlo en el mapa y ver su detalle. */
+  readonly selectedPlate = this._selectedPlate.asReadonly();
   /** Vehículo seleccionado completo, o `null` si no hay selección o ya no existe en el listado. */
   readonly selectedVehicle = computed(
-    () => this._vehicles().find((v) => v.vehicleId === this._selectedVehicleId()) ?? null,
+    () => this._vehicles().find((v) => v.plate === this._selectedPlate()) ?? null,
   );
 
   /** Conteo de vehículos por estado de movimiento. */
@@ -73,35 +73,35 @@ export class FleetStoreService {
   }
 
   /** Da de alta un vehículo y lo refleja de inmediato en el listado, sin esperar al push. */
-  registerVehicle(vehicleId: string): Observable<Vehicle> {
-    return this.vehicleApi.register(vehicleId).pipe(tap((vehicle) => this.applyVehicleUpdate(vehicle)));
+  registerVehicle(plate: string): Observable<Vehicle> {
+    return this.vehicleApi.register(plate).pipe(tap((vehicle) => this.applyVehicleUpdate(vehicle)));
   }
 
   /** Pide la eliminación de un vehículo; queda en `PENDING_DELETION` hasta que la Saga confirme. */
-  removeVehicle(vehicleId: string): Observable<Vehicle> {
-    return this.vehicleApi.remove(vehicleId).pipe(tap((vehicle) => this.applyVehicleUpdate(vehicle)));
+  removeVehicle(plate: string): Observable<Vehicle> {
+    return this.vehicleApi.remove(plate).pipe(tap((vehicle) => this.applyVehicleUpdate(vehicle)));
   }
 
   /** Selecciona un vehículo del listado (o `null` para quitar la selección). */
-  selectVehicle(vehicleId: string | null): void {
-    this._selectedVehicleId.set(vehicleId);
+  selectVehicle(plate: string | null): void {
+    this._selectedPlate.set(plate);
   }
 
   /**
-   * Inserta o actualiza un vehículo en el listado según su id. Cuando el vehículo llega en
+   * Inserta o actualiza un vehículo en el listado según su placa. Cuando el vehículo llega en
    * estado `DELETED` (confirmación final de la Saga de eliminación) se retira del listado en
    * vez de mostrarse como una fila más.
    */
   private applyVehicleUpdate(vehicle: Vehicle): void {
     if (vehicle.status === 'DELETED') {
-      this._vehicles.update((list) => list.filter((v) => v.vehicleId !== vehicle.vehicleId));
-      if (this._selectedVehicleId() === vehicle.vehicleId) {
-        this._selectedVehicleId.set(null);
+      this._vehicles.update((list) => list.filter((v) => v.plate !== vehicle.plate));
+      if (this._selectedPlate() === vehicle.plate) {
+        this._selectedPlate.set(null);
       }
       return;
     }
     this._vehicles.update((list) => {
-      const index = list.findIndex((v) => v.vehicleId === vehicle.vehicleId);
+      const index = list.findIndex((v) => v.plate === vehicle.plate);
       if (index === -1) {
         return [...list, vehicle];
       }

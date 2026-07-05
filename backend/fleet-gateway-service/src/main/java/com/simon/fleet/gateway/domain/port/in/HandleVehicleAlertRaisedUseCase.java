@@ -1,6 +1,6 @@
 package com.simon.fleet.gateway.domain.port.in;
 
-import com.simon.fleet.gateway.domain.model.VehicleId;
+import com.simon.fleet.gateway.domain.model.VehiclePlate;
 
 import java.time.Instant;
 
@@ -12,5 +12,5 @@ import java.time.Instant;
 public interface HandleVehicleAlertRaisedUseCase {
 
     /** Idempotente: aplicar la misma alerta dos veces deja el vehículo igual de en alerta. */
-    void onAlertRaised(VehicleId vehicleId, Instant raisedAt);
+    void onAlertRaised(VehiclePlate plate, Instant raisedAt);
 }

@@ -29,6 +29,6 @@ export class MarkerBuilder {
   /** Contenido del popup que se abre al hacer clic sobre el marcador. */
   static popupFor(vehicle: Vehicle): string {
     const presentation = presentMovementStatus(vehicle.movementStatus);
-    return `<strong>${vehicle.vehicleId}</strong><br>${presentation.label}`;
+    return `<strong>${vehicle.plate}</strong><br>${presentation.label}`;
   }
 }

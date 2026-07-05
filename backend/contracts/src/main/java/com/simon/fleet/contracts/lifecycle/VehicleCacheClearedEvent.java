@@ -8,11 +8,11 @@ import java.time.Instant;
  * todo lo relacionado con el vehículo. fleet-gateway-service usa esta confirmación, junto con
  * {@link VehicleDataPurgedEvent}, para marcar el vehículo como definitivamente eliminado.
  *
- * @param vehicleId vehículo cuyo caché/histórico ya fue limpiado.
+ * @param plate     placa del vehículo cuyo caché/histórico ya fue limpiado.
  * @param clearedAt momento en que se completó la limpieza.
  */
 public record VehicleCacheClearedEvent(
-        String vehicleId,
+        String plate,
         Instant clearedAt
 ) {
 }

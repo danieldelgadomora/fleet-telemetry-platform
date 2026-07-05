@@ -72,7 +72,7 @@ def _format_timestamp(moment: datetime) -> str:
 
 def build_valid_body(vehicle: Vehicle) -> dict:
     return {
-        "vehicle_id": vehicle.vehicle_id,
+        "plate": vehicle.plate,
         "lat": vehicle.lat,
         "lng": vehicle.lng,
         "timestamp": _format_timestamp(datetime.now(timezone.utc)),

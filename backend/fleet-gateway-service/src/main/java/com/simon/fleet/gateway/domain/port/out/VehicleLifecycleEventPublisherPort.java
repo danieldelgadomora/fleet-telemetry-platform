@@ -1,6 +1,6 @@
 package com.simon.fleet.gateway.domain.port.out;
 
-import com.simon.fleet.gateway.domain.model.VehicleId;
+import com.simon.fleet.gateway.domain.model.VehiclePlate;
 
 /**
  * Puerto de salida (driven) hacia RabbitMQ: arranca la Saga de eliminación. ingestion-service y
@@ -9,5 +9,5 @@ import com.simon.fleet.gateway.domain.model.VehicleId;
  */
 public interface VehicleLifecycleEventPublisherPort {
 
-    void publishDeletionRequested(VehicleId vehicleId);
+    void publishDeletionRequested(VehiclePlate plate);
 }

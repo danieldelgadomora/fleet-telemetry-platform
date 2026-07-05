@@ -1,7 +1,7 @@
 package com.simon.fleet.ingestion.domain.port.out;
 
 import com.simon.fleet.ingestion.domain.model.TelemetryPoint;
-import com.simon.fleet.ingestion.domain.model.VehicleId;
+import com.simon.fleet.ingestion.domain.model.VehiclePlate;
 
 /**
  * Puerto de salida (driven) hacia el broker de eventos (RabbitMQ). El dominio publica hechos
@@ -20,5 +20,5 @@ public interface TelemetryEventPublisherPort {
      * Confirma, dentro de la Saga de borrado, que este servicio ya limpió el caché y el
      * histórico del vehículo.
      */
-    void publishCacheCleared(VehicleId vehicleId);
+    void publishCacheCleared(VehiclePlate plate);
 }

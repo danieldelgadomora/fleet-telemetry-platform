@@ -1,7 +1,7 @@
 package com.simon.fleet.gateway.infrastructure.web.websocket;
 
 import com.simon.fleet.gateway.domain.model.Vehicle;
-import com.simon.fleet.gateway.domain.model.VehicleId;
+import com.simon.fleet.gateway.domain.model.VehiclePlate;
 import com.simon.fleet.gateway.domain.port.out.AlertBroadcastPort;
 import com.simon.fleet.gateway.domain.port.out.FleetStatusBroadcastPort;
 import com.simon.fleet.gateway.infrastructure.web.dto.VehicleResponseDto;
@@ -37,8 +37,8 @@ public class StompDashboardBroadcaster implements FleetStatusBroadcastPort, Aler
     }
 
     @Override
-    public void broadcastAlert(VehicleId vehicleId, String alertId, String ruleCode, String message, Instant raisedAt) {
-        send(ALERTS_TOPIC, new AlertMessage(alertId, vehicleId.value(), ruleCode, message, raisedAt));
+    public void broadcastAlert(VehiclePlate plate, String alertId, String ruleCode, String message, Instant raisedAt) {
+        send(ALERTS_TOPIC, new AlertMessage(alertId, plate.value(), ruleCode, message, raisedAt));
     }
 
     private void send(String destination, Object payload) {

@@ -2,7 +2,7 @@ package com.simon.fleet.gateway.infrastructure.messaging.rabbitmq.consumer;
 
 import com.simon.fleet.contracts.lifecycle.VehicleDataPurgedEvent;
 import com.simon.fleet.gateway.domain.port.in.HandleDataPurgedUseCase;
-import com.simon.fleet.gateway.domain.model.VehicleId;
+import com.simon.fleet.gateway.domain.model.VehiclePlate;
 import com.simon.fleet.gateway.infrastructure.messaging.rabbitmq.config.RabbitMqConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -17,6 +17,6 @@ public class VehicleDataPurgedConsumer {
 
     @RabbitListener(queues = RabbitMqConfig.DATA_PURGED_QUEUE)
     public void onDataPurged(VehicleDataPurgedEvent event) {
-        handleDataPurgedUseCase.onDataPurged(new VehicleId(event.vehicleId()), event.purgedAt());
+        handleDataPurgedUseCase.onDataPurged(new VehiclePlate(event.plate()), event.purgedAt());
     }
 }

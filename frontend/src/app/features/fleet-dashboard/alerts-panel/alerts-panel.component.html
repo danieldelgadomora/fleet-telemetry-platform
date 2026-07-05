@@ -1,7 +1,7 @@
 <section class="alerts-panel">
   <h3 class="alerts-panel__title">
     @if (vehicleFiltrado(); as vehicle) {
-      Alertas de {{ vehicle.vehicleId }}
+      Alertas de {{ vehicle.plate }}
     } @else {
       Alertas recientes
     }
@@ -19,7 +19,7 @@
       @for (alerta of alerts(); track alerta.alertId) {
         <mat-list-item>
           <mat-icon matListItemIcon class="status-alert">warning</mat-icon>
-          <div matListItemTitle>{{ alerta.vehicleId }}</div>
+          <div matListItemTitle>{{ alerta.plate }}</div>
           <div matListItemLine>{{ alerta.message }}</div>
           <div matListItemLine class="alerts-panel__time">{{ alerta.raisedAt | relativeTime }}</div>
         </mat-list-item>

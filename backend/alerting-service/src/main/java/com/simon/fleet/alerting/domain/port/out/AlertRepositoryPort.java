@@ -1,7 +1,7 @@
 package com.simon.fleet.alerting.domain.port.out;
 
 import com.simon.fleet.alerting.domain.model.Alert;
-import com.simon.fleet.alerting.domain.model.VehicleId;
+import com.simon.fleet.alerting.domain.model.VehiclePlate;
 
 /**
  * Puerto de salida (driven) de persistencia de alertas (PostgreSQL). Las alertas son datos
@@ -13,5 +13,5 @@ public interface AlertRepositoryPort {
     void save(Alert alert);
 
     /** Participante de la Saga de borrado: purga las alertas históricas del vehículo. */
-    void purgeByVehicle(VehicleId vehicleId);
+    void purgeByVehicle(VehiclePlate plate);
 }

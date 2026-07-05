@@ -56,7 +56,7 @@ public class TelemetryController {
             case DUPLICATE_IGNORED -> "Lectura duplicada dentro de la ventana de dedupe, ignorada";
         };
 
-        TelemetryResponseDto body = new TelemetryResponseDto(request.vehicleId(), result.name(), message);
+        TelemetryResponseDto body = new TelemetryResponseDto(point.plate().value(), result.name(), message);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(body);
     }
 }

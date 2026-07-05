@@ -2,7 +2,7 @@ package com.simon.fleet.ingestion.infrastructure.messaging.rabbitmq.consumer;
 
 import com.simon.fleet.contracts.lifecycle.VehicleDeletionRequestedEvent;
 import com.simon.fleet.ingestion.domain.port.in.PurgeVehicleDataUseCase;
-import com.simon.fleet.ingestion.domain.model.VehicleId;
+import com.simon.fleet.ingestion.domain.model.VehiclePlate;
 import com.simon.fleet.ingestion.infrastructure.messaging.rabbitmq.config.RabbitMqConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -21,6 +21,6 @@ public class VehicleDeletionConsumer {
 
     @RabbitListener(queues = RabbitMqConfig.VEHICLE_DELETION_QUEUE)
     public void onVehicleDeletionRequested(VehicleDeletionRequestedEvent event) {
-        purgeVehicleDataUseCase.purgeVehicle(new VehicleId(event.vehicleId()));
+        purgeVehicleDataUseCase.purgeVehicle(new VehiclePlate(event.plate()));
     }
 }

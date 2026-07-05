@@ -13,7 +13,7 @@ import java.time.Instant;
 
 /**
  * Documento de la colección time-series {@code telemetry_history}: una fila por lectura GPS,
- * append-only. {@code metaField = vehicleId} le dice a MongoDB que agrupe internamente las
+ * append-only. {@code metaField = plate} le dice a MongoDB que agrupe internamente las
  * lecturas por vehículo, lo que hace muy eficientes las consultas por vehículo + rango de
  * tiempo (el patrón de acceso principal de este histórico).
  */
@@ -21,14 +21,14 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = TelemetryDocument.COLLECTION)
-@TimeSeries(timeField = "recordedAt", metaField = "vehicleId", collection = TelemetryDocument.COLLECTION)
+@TimeSeries(timeField = "recordedAt", metaField = "plate", collection = TelemetryDocument.COLLECTION)
 public class TelemetryDocument {
 
     public static final String COLLECTION = "telemetry_history";
 
     @Id
     private String id;
-    private String vehicleId;
+    private String plate;
     private double lat;
     private double lng;
     private Instant recordedAt;
@@ -39,7 +39,7 @@ public class TelemetryDocument {
     public static TelemetryDocument fromDomain(TelemetryPoint point) {
         return new TelemetryDocument(
                 null,
-                point.vehicleId().value(),
+                point.plate().value(),
                 point.coordinates().lat(),
                 point.coordinates().lng(),
                 point.recordedAt(),
