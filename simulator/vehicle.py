@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import math
 import random
+import string
 from dataclasses import dataclass, field
 from enum import StrEnum
 
 from simulator.cli import SimulatorConfig
 
+PLATE_LETTERS = string.ascii_uppercase
+PLATE_DIGITS = string.digits
 WAYPOINTS_PER_ROUTE = 5
 ARRIVAL_THRESHOLD_DEG = 0.002
 JITTER_SIGMA_DEG = 0.0003
@@ -67,6 +70,16 @@ def _random_waypoints(
     ]
 
 
+def _random_plate(rng: random.Random, used: set[str]) -> str:
+    """Genera una placa con formato colombiano simple (3 letras + 3 dígitos, ej. `ABC123`),
+    reintentando si ya se usó dentro de la misma flota."""
+    while True:
+        plate = "".join(rng.choices(PLATE_LETTERS, k=3)) + "".join(rng.choices(PLATE_DIGITS, k=3))
+        if plate not in used:
+            used.add(plate)
+            return plate
+
+
 def build_fleet(config: SimulatorConfig) -> list[Vehicle]:
     """Construye la flota de vehículos simulados a partir de la configuración de CLI.
 
@@ -75,6 +88,7 @@ def build_fleet(config: SimulatorConfig) -> list[Vehicle]:
     únicamente al azar del caos.
     """
     fleet: list[Vehicle] = []
+    used_plates: set[str] = set()
     for index in range(config.vehicles):
         seed = None if config.seed is None else config.seed + index
         rng = random.Random(seed)
@@ -83,7 +97,7 @@ def build_fleet(config: SimulatorConfig) -> list[Vehicle]:
         start_lat, start_lng = waypoints[0]
         fleet.append(
             Vehicle(
-                plate=f"v{index + 1}",
+                plate=_random_plate(rng, used_plates),
                 state=state,
                 waypoints=waypoints,
                 rng=rng,
