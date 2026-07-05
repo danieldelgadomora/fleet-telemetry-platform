@@ -1,5 +1,6 @@
 package com.simon.fleet.ingestion.infrastructure.web.exception;
 
+import com.simon.fleet.ingestion.domain.exception.InvalidPanicPayloadException;
 import com.simon.fleet.ingestion.domain.exception.InvalidTelemetryPayloadException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidTelemetryPayloadException.class)
     public ResponseEntity<Map<String, Object>> handleInvalidPayload(InvalidTelemetryPayloadException ex) {
+        return badRequest(ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidPanicPayloadException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidPanicPayload(InvalidPanicPayloadException ex) {
         return badRequest(ex.getMessage());
     }
 
