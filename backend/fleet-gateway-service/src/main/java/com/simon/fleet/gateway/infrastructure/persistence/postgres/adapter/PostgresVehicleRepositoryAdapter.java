@@ -86,16 +86,16 @@ public class PostgresVehicleRepositoryAdapter implements VehicleRepositoryPort {
     }
 
     private Vehicle toDomain(VehicleJpaEntity entity) {
-        return Vehicle.rehydrate(
-                new VehiclePlate(entity.getPlate()),
-                VehicleStatus.valueOf(entity.getStatus()),
-                entity.getRegisteredAt(),
-                entity.getCacheClearedAt(),
-                entity.getDataPurgedAt(),
-                entity.getLastLat(),
-                entity.getLastLng(),
-                entity.getLastReportedAt(),
-                entity.getMovementStatus() == null ? null : MovementStatus.valueOf(entity.getMovementStatus())
-        );
+        return Vehicle.builder()
+                .id(new VehiclePlate(entity.getPlate()))
+                .status(VehicleStatus.valueOf(entity.getStatus()))
+                .registeredAt(entity.getRegisteredAt())
+                .cacheClearedAt(entity.getCacheClearedAt())
+                .dataPurgedAt(entity.getDataPurgedAt())
+                .lastLat(entity.getLastLat())
+                .lastLng(entity.getLastLng())
+                .lastReportedAt(entity.getLastReportedAt())
+                .movementStatus(entity.getMovementStatus() == null ? null : MovementStatus.valueOf(entity.getMovementStatus()))
+                .build();
     }
 }

@@ -5,7 +5,7 @@ import java.time.Instant;
 /**
  * Confirmación publicada por ingestion-service tras completar su parte de la Saga de borrado:
  * ya eliminó del caché Redis (última posición + claves de dedupe) y del histórico en MongoDB
- * todo lo relacionado con el vehículo. fleet-gateway-service usa esta confirmación, junto con
+ * cualquier rastro del vehículo. fleet-gateway-service usa esta confirmación, junto con
  * {@link VehicleDataPurgedEvent}, para marcar el vehículo como definitivamente eliminado.
  *
  * @param plate     placa del vehículo cuyo caché/histórico ya fue limpiado.

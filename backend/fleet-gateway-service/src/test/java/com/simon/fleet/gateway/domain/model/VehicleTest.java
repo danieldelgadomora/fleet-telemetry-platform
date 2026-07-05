@@ -36,8 +36,11 @@ class VehicleTest {
     @Test
     @DisplayName("requestDeletion() desde PENDING_DELETION lanza InvalidVehicleStateException")
     void requestDeletionDesdePendingDeletionLanzaExcepcion() {
-        Vehicle vehicle = Vehicle.rehydrate(
-                plate, VehicleStatus.PENDING_DELETION, now, null, null, null, null, null, null);
+        Vehicle vehicle = Vehicle.builder()
+                .id(plate)
+                .status(VehicleStatus.PENDING_DELETION)
+                .registeredAt(now)
+                .build();
 
         assertThatThrownBy(vehicle::requestDeletion)
                 .isInstanceOf(InvalidVehicleStateException.class)
@@ -48,8 +51,13 @@ class VehicleTest {
     @Test
     @DisplayName("requestDeletion() desde DELETED lanza InvalidVehicleStateException")
     void requestDeletionDesdeDeletedLanzaExcepcion() {
-        Vehicle vehicle = Vehicle.rehydrate(
-                plate, VehicleStatus.DELETED, now, now, now, null, null, null, null);
+        Vehicle vehicle = Vehicle.builder()
+                .id(plate)
+                .status(VehicleStatus.DELETED)
+                .registeredAt(now)
+                .cacheClearedAt(now)
+                .dataPurgedAt(now)
+                .build();
 
         assertThatThrownBy(vehicle::requestDeletion)
                 .isInstanceOf(InvalidVehicleStateException.class)
