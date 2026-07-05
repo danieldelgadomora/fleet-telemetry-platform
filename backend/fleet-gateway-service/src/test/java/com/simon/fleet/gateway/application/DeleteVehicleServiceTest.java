@@ -70,8 +70,11 @@ class DeleteVehicleServiceTest {
     @Test
     @DisplayName("un vehículo ya PENDING_DELETION propaga la excepción sin guardar ni publicar")
     void vehiculoYaPendingDeletionPropagaExcepcionSinEfectosSecundarios() {
-        Vehicle vehicle = Vehicle.rehydrate(
-                plate, VehicleStatus.PENDING_DELETION, Instant.now(), null, null, null, null, null, null);
+        Vehicle vehicle = Vehicle.builder()
+                .id(plate)
+                .status(VehicleStatus.PENDING_DELETION)
+                .registeredAt(Instant.now())
+                .build();
         when(repositoryPort.findById(plate)).thenReturn(Optional.of(vehicle));
 
         DeleteVehicleService service = new DeleteVehicleService(repositoryPort, eventPublisherPort);

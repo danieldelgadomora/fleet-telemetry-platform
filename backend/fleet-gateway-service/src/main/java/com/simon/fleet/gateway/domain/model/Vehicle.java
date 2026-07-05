@@ -1,6 +1,7 @@
 package com.simon.fleet.gateway.domain.model;
 
 import com.simon.fleet.gateway.domain.exception.InvalidVehicleStateException;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.Instant;
@@ -16,8 +17,14 @@ import java.time.Instant;
  * <p>Además del estado de la Saga, guarda el último estado conocido para el dashboard
  * ({@link MovementStatus}, última posición): es una vista de lectura que fleet-gateway-service
  * mantiene suscribiéndose a los eventos de ingestion-service y alerting-service.
+ *
+ * <p>Se construye con el Builder Pattern (vía Lombok), igual que {@code Alert} en
+ * alerting-service: tiene varios campos opcionales (los de la Saga y los de última posición
+ * empiezan en {@code null}) y un builder es más legible que un constructor con muchos
+ * parámetros posicionales.
  */
 @Getter
+@Builder
 public class Vehicle {
 
     private final VehiclePlate id;
@@ -30,31 +37,12 @@ public class Vehicle {
     private Instant lastReportedAt;
     private MovementStatus movementStatus;
 
-    private Vehicle(VehiclePlate id, VehicleStatus status, Instant registeredAt,
-                     Instant cacheClearedAt, Instant dataPurgedAt,
-                     Double lastLat, Double lastLng, Instant lastReportedAt, MovementStatus movementStatus) {
-        this.id = id;
-        this.status = status;
-        this.registeredAt = registeredAt;
-        this.cacheClearedAt = cacheClearedAt;
-        this.dataPurgedAt = dataPurgedAt;
-        this.lastLat = lastLat;
-        this.lastLng = lastLng;
-        this.lastReportedAt = lastReportedAt;
-        this.movementStatus = movementStatus;
-    }
-
     public static Vehicle register(VehiclePlate id, Instant now) {
-        return new Vehicle(id, VehicleStatus.ACTIVE, now, null, null, null, null, null, null);
-    }
-
-    /** Reconstruye un vehículo ya existente desde el almacén de persistencia. */
-    public static Vehicle rehydrate(VehiclePlate id, VehicleStatus status, Instant registeredAt,
-                                     Instant cacheClearedAt, Instant dataPurgedAt,
-                                     Double lastLat, Double lastLng, Instant lastReportedAt,
-                                     MovementStatus movementStatus) {
-        return new Vehicle(id, status, registeredAt, cacheClearedAt, dataPurgedAt,
-                lastLat, lastLng, lastReportedAt, movementStatus);
+        return Vehicle.builder()
+                .id(id)
+                .status(VehicleStatus.ACTIVE)
+                .registeredAt(now)
+                .build();
     }
 
     /**

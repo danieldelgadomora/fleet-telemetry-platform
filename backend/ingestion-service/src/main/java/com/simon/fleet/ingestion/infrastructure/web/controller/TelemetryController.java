@@ -8,7 +8,6 @@ import com.simon.fleet.ingestion.infrastructure.web.dto.TelemetryResponseDto;
 import com.simon.fleet.ingestion.infrastructure.web.mapper.TelemetryRequestMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -41,10 +40,8 @@ public class TelemetryController {
                     forma asíncrona.
                     """
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "202", description = "Lectura aceptada (nueva o duplicado ignorado)"),
-            @ApiResponse(responseCode = "400", description = "Payload inválido: campo faltante, fuera de rango o timestamp no parseable")
-    })
+    @ApiResponse(responseCode = "202", description = "Lectura aceptada (nueva o duplicado ignorado)")
+    @ApiResponse(responseCode = "400", description = "Payload inválido: campo faltante, fuera de rango o timestamp no parseable")
     public ResponseEntity<TelemetryResponseDto> receive(@RequestBody TelemetryRequestDto request) {
         TelemetryPoint point = TelemetryRequestMapper.toDomain(request);
         TelemetryIngestionResult result = ingestTelemetryUseCase.ingest(point);
