@@ -37,7 +37,7 @@ async def _vehicle_loop(
 
         request = chaos.build_request(vehicle, chaos_type, vehicle.rng)
         result = await client.send(http_client, config.ingestion_url, request)
-        reporter.log_request(vehicle.vehicle_id, request.label, result, stats)
+        reporter.log_request(vehicle.plate, request.label, result, stats)
 
         iterations_done += 1
         try:

@@ -30,7 +30,7 @@ export class AlertsPanelComponent {
   readonly alerts = computed(() => {
     const vehicle = this.vehicleFiltrado();
     const alerts = this.fleetStore.alerts();
-    return vehicle ? alerts.filter((a) => a.vehicleId === vehicle.vehicleId) : alerts;
+    return vehicle ? alerts.filter((a) => a.plate === vehicle.plate) : alerts;
   });
 
   constructor() {
@@ -38,7 +38,7 @@ export class AlertsPanelComponent {
       const [masReciente] = this.fleetStore.alerts();
       if (masReciente && masReciente.alertId !== this.ultimaAlertaNotificada) {
         this.ultimaAlertaNotificada = masReciente.alertId;
-        this.snackBar.open(`${masReciente.vehicleId}: ${masReciente.message}`, 'Cerrar', { duration: 4000 });
+        this.snackBar.open(`${masReciente.plate}: ${masReciente.message}`, 'Cerrar', { duration: 4000 });
       }
     });
   }
