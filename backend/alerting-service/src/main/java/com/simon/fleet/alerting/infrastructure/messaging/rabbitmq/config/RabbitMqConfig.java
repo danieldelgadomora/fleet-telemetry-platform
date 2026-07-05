@@ -26,16 +26,22 @@ public class RabbitMqConfig {
 
     public static final String FLEET_TELEMETRY_EXCHANGE = "fleet.telemetry";
     public static final String FLEET_ALERTS_EXCHANGE = "fleet.alerts";
+    public static final String FLEET_PANIC_EXCHANGE = "fleet.panic";
     public static final String VEHICLE_LIFECYCLE_EXCHANGE = "vehicle.lifecycle";
 
     public static final String TELEMETRY_RECEIVED_KEY = "telemetry.received";
     public static final String ALERT_RAISED_KEY = "alert.raised";
+    public static final String PANIC_RAISED_KEY = "panic.raised";
     public static final String VEHICLE_DELETION_REQUESTED_KEY = "vehicle.deletion.requested";
     public static final String VEHICLE_DATA_PURGED_KEY = "vehicle.data.purged";
 
     public static final String EVALUATE_QUEUE = "alerting.telemetry.evaluate";
     public static final String EVALUATE_DLQ = "alerting.telemetry.evaluate.dlq";
     private static final String EVALUATE_DLX = "alerting.telemetry.evaluate.dlx";
+
+    public static final String PANIC_QUEUE = "alerting.panic.evaluate";
+    public static final String PANIC_DLQ = "alerting.panic.evaluate.dlq";
+    private static final String PANIC_DLX = "alerting.panic.evaluate.dlx";
 
     public static final String VEHICLE_DELETION_QUEUE = "alerting.vehicle.deletion";
 
@@ -57,6 +63,12 @@ public class RabbitMqConfig {
     @Bean
     public TopicExchange vehicleLifecycleExchange() {
         return new TopicExchange(VEHICLE_LIFECYCLE_EXCHANGE);
+    }
+
+    /** También lo declara ingestion-service (publisher); ver nota de clase sobre idempotencia. */
+    @Bean
+    public TopicExchange fleetPanicExchange() {
+        return new TopicExchange(FLEET_PANIC_EXCHANGE);
     }
 
     @Bean
@@ -86,6 +98,35 @@ public class RabbitMqConfig {
         return BindingBuilder.bind(telemetryEvaluateQueue())
                 .to(fleetTelemetryExchange())
                 .with(TELEMETRY_RECEIVED_KEY);
+    }
+
+    @Bean
+    public FanoutExchange panicDeadLetterExchange() {
+        return new FanoutExchange(PANIC_DLX);
+    }
+
+    @Bean
+    public Queue panicDeadLetterQueue() {
+        return QueueBuilder.durable(PANIC_DLQ).build();
+    }
+
+    @Bean
+    public Binding panicDeadLetterBinding() {
+        return BindingBuilder.bind(panicDeadLetterQueue()).to(panicDeadLetterExchange());
+    }
+
+    @Bean
+    public Queue panicEvaluateQueue() {
+        return QueueBuilder.durable(PANIC_QUEUE)
+                .withArgument("x-dead-letter-exchange", PANIC_DLX)
+                .build();
+    }
+
+    @Bean
+    public Binding panicEvaluateBinding() {
+        return BindingBuilder.bind(panicEvaluateQueue())
+                .to(fleetPanicExchange())
+                .with(PANIC_RAISED_KEY);
     }
 
     @Bean

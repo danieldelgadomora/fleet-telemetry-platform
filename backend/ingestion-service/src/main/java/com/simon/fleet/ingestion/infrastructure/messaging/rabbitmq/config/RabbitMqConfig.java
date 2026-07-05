@@ -24,9 +24,11 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMqConfig {
 
     public static final String FLEET_TELEMETRY_EXCHANGE = "fleet.telemetry";
+    public static final String FLEET_PANIC_EXCHANGE = "fleet.panic";
     public static final String VEHICLE_LIFECYCLE_EXCHANGE = "vehicle.lifecycle";
 
     public static final String TELEMETRY_RECEIVED_KEY = "telemetry.received";
+    public static final String PANIC_RAISED_KEY = "panic.raised";
     public static final String VEHICLE_DELETION_REQUESTED_KEY = "vehicle.deletion.requested";
     public static final String VEHICLE_CACHE_CLEARED_KEY = "vehicle.cache.cleared";
 
@@ -49,6 +51,15 @@ public class RabbitMqConfig {
     @Bean
     public TopicExchange vehicleLifecycleExchange() {
         return new TopicExchange(VEHICLE_LIFECYCLE_EXCHANGE);
+    }
+
+    /**
+     * ingestion-service solo publica en este exchange (el botón de pánico no necesita cola
+     * propia aquí, ya que no consume su propio evento como sí ocurre con la telemetría).
+     */
+    @Bean
+    public TopicExchange fleetPanicExchange() {
+        return new TopicExchange(FLEET_PANIC_EXCHANGE);
     }
 
     /** Dead-letter exchange: fanout, porque la única cola que le importa es la DLQ de abajo. */
