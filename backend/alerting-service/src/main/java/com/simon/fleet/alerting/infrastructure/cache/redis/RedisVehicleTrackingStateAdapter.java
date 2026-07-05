@@ -2,7 +2,7 @@ package com.simon.fleet.alerting.infrastructure.cache.redis;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.simon.fleet.alerting.domain.model.VehicleId;
+import com.simon.fleet.alerting.domain.model.VehiclePlate;
 import com.simon.fleet.alerting.domain.model.VehicleTrackingState;
 import com.simon.fleet.alerting.domain.port.out.VehicleTrackingStatePort;
 import lombok.RequiredArgsConstructor;
@@ -29,15 +29,15 @@ public class RedisVehicleTrackingStateAdapter implements VehicleTrackingStatePor
     private final ObjectMapper objectMapper;
 
     @Override
-    public Optional<VehicleTrackingState> find(VehicleId vehicleId) {
-        String json = redisTemplate.opsForValue().get(key(vehicleId));
+    public Optional<VehicleTrackingState> find(VehiclePlate plate) {
+        String json = redisTemplate.opsForValue().get(key(plate));
         if (json == null) {
             return Optional.empty();
         }
         try {
             return Optional.of(objectMapper.readValue(json, VehicleTrackingState.class));
         } catch (JsonProcessingException e) {
-            log.warn("No se pudo deserializar el estado de tracking de {}", vehicleId, e);
+            log.warn("No se pudo deserializar el estado de tracking de {}", plate, e);
             return Optional.empty();
         }
     }
@@ -46,18 +46,18 @@ public class RedisVehicleTrackingStateAdapter implements VehicleTrackingStatePor
     public void save(VehicleTrackingState state) {
         try {
             String json = objectMapper.writeValueAsString(state);
-            redisTemplate.opsForValue().set(key(state.vehicleId()), json);
+            redisTemplate.opsForValue().set(key(state.plate()), json);
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("No se pudo serializar el VehicleTrackingState", e);
         }
     }
 
     @Override
-    public void clear(VehicleId vehicleId) {
-        redisTemplate.delete(key(vehicleId));
+    public void clear(VehiclePlate plate) {
+        redisTemplate.delete(key(plate));
     }
 
-    private String key(VehicleId vehicleId) {
-        return KEY_PREFIX + vehicleId.value();
+    private String key(VehiclePlate plate) {
+        return KEY_PREFIX + plate.value();
     }
 }

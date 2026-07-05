@@ -1,7 +1,7 @@
 package com.simon.fleet.alerting.infrastructure.messaging.rabbitmq.publisher;
 
 import com.simon.fleet.alerting.domain.model.Alert;
-import com.simon.fleet.alerting.domain.model.VehicleId;
+import com.simon.fleet.alerting.domain.model.VehiclePlate;
 import com.simon.fleet.alerting.domain.port.out.AlertEventPublisherPort;
 import com.simon.fleet.alerting.infrastructure.messaging.rabbitmq.config.RabbitMqConfig;
 import com.simon.fleet.contracts.alert.VehicleAlertRaisedEvent;
@@ -22,7 +22,7 @@ public class RabbitMqAlertEventPublisher implements AlertEventPublisherPort {
     public void publishRaised(Alert alert) {
         VehicleAlertRaisedEvent event = new VehicleAlertRaisedEvent(
                 alert.getAlertId(),
-                alert.getVehicleId().value(),
+                alert.getPlate().value(),
                 alert.getRuleCode(),
                 alert.getMessage(),
                 alert.getRaisedAt()
@@ -32,8 +32,8 @@ public class RabbitMqAlertEventPublisher implements AlertEventPublisherPort {
     }
 
     @Override
-    public void publishDataPurged(VehicleId vehicleId) {
-        VehicleDataPurgedEvent event = new VehicleDataPurgedEvent(vehicleId.value(), Instant.now());
+    public void publishDataPurged(VehiclePlate plate) {
+        VehicleDataPurgedEvent event = new VehicleDataPurgedEvent(plate.value(), Instant.now());
         rabbitTemplate.convertAndSend(
                 RabbitMqConfig.VEHICLE_LIFECYCLE_EXCHANGE, RabbitMqConfig.VEHICLE_DATA_PURGED_KEY, event);
     }

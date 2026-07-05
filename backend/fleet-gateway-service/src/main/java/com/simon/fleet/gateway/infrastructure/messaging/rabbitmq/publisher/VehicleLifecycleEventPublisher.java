@@ -1,7 +1,7 @@
 package com.simon.fleet.gateway.infrastructure.messaging.rabbitmq.publisher;
 
 import com.simon.fleet.contracts.lifecycle.VehicleDeletionRequestedEvent;
-import com.simon.fleet.gateway.domain.model.VehicleId;
+import com.simon.fleet.gateway.domain.model.VehiclePlate;
 import com.simon.fleet.gateway.domain.port.out.VehicleLifecycleEventPublisherPort;
 import com.simon.fleet.gateway.infrastructure.messaging.rabbitmq.config.RabbitMqConfig;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +17,8 @@ public class VehicleLifecycleEventPublisher implements VehicleLifecycleEventPubl
     private final RabbitTemplate rabbitTemplate;
 
     @Override
-    public void publishDeletionRequested(VehicleId vehicleId) {
-        VehicleDeletionRequestedEvent event = new VehicleDeletionRequestedEvent(vehicleId.value(), Instant.now());
+    public void publishDeletionRequested(VehiclePlate plate) {
+        VehicleDeletionRequestedEvent event = new VehicleDeletionRequestedEvent(plate.value(), Instant.now());
         rabbitTemplate.convertAndSend(
                 RabbitMqConfig.VEHICLE_LIFECYCLE_EXCHANGE, RabbitMqConfig.VEHICLE_DELETION_REQUESTED_KEY, event);
     }

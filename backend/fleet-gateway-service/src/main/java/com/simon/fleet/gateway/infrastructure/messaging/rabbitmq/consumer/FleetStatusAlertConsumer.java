@@ -1,7 +1,7 @@
 package com.simon.fleet.gateway.infrastructure.messaging.rabbitmq.consumer;
 
 import com.simon.fleet.contracts.alert.VehicleAlertRaisedEvent;
-import com.simon.fleet.gateway.domain.model.VehicleId;
+import com.simon.fleet.gateway.domain.model.VehiclePlate;
 import com.simon.fleet.gateway.domain.port.in.BroadcastAlertUseCase;
 import com.simon.fleet.gateway.domain.port.in.HandleVehicleAlertRaisedUseCase;
 import com.simon.fleet.gateway.infrastructure.messaging.rabbitmq.config.RabbitMqConfig;
@@ -27,9 +27,9 @@ public class FleetStatusAlertConsumer {
 
     @RabbitListener(queues = RabbitMqConfig.FLEET_STATUS_ALERT_QUEUE)
     public void onAlertRaised(VehicleAlertRaisedEvent event) {
-        VehicleId vehicleId = new VehicleId(event.vehicleId());
-        handleVehicleAlertRaisedUseCase.onAlertRaised(vehicleId, event.raisedAt());
+        VehiclePlate plate = new VehiclePlate(event.plate());
+        handleVehicleAlertRaisedUseCase.onAlertRaised(plate, event.raisedAt());
         broadcastAlertUseCase.broadcastAlert(
-                vehicleId, event.alertId(), event.ruleCode(), event.message(), event.raisedAt());
+                plate, event.alertId(), event.ruleCode(), event.message(), event.raisedAt());
     }
 }

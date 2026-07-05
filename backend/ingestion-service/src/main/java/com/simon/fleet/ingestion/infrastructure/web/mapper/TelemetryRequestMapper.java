@@ -3,7 +3,7 @@ package com.simon.fleet.ingestion.infrastructure.web.mapper;
 import com.simon.fleet.ingestion.domain.model.Coordinates;
 import com.simon.fleet.ingestion.domain.exception.InvalidTelemetryPayloadException;
 import com.simon.fleet.ingestion.domain.model.TelemetryPoint;
-import com.simon.fleet.ingestion.domain.model.VehicleId;
+import com.simon.fleet.ingestion.domain.model.VehiclePlate;
 import com.simon.fleet.ingestion.infrastructure.web.dto.TelemetryRequestDto;
 
 import java.time.DateTimeException;
@@ -21,8 +21,8 @@ public final class TelemetryRequestMapper {
     }
 
     public static TelemetryPoint toDomain(TelemetryRequestDto dto) {
-        if (dto.vehicleId() == null || dto.vehicleId().isBlank()) {
-            throw new InvalidTelemetryPayloadException("vehicle_id es obligatorio");
+        if (dto.plate() == null || dto.plate().isBlank()) {
+            throw new InvalidTelemetryPayloadException("plate es obligatorio");
         }
         if (dto.lat() == null || dto.lng() == null) {
             throw new InvalidTelemetryPayloadException("lat y lng son obligatorios");
@@ -32,10 +32,10 @@ public final class TelemetryRequestMapper {
         }
 
         try {
-            VehicleId vehicleId = new VehicleId(dto.vehicleId());
+            VehiclePlate plate = new VehiclePlate(dto.plate());
             Coordinates coordinates = new Coordinates(dto.lat(), dto.lng());
             Instant recordedAt = Instant.parse(dto.timestamp());
-            return new TelemetryPoint(vehicleId, coordinates, recordedAt);
+            return new TelemetryPoint(plate, coordinates, recordedAt);
         } catch (IllegalArgumentException | DateTimeException e) {
             throw new InvalidTelemetryPayloadException("payload inválido: " + e.getMessage());
         }

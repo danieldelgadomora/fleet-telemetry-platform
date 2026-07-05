@@ -1,6 +1,6 @@
 package com.simon.fleet.ingestion.application;
 
-import com.simon.fleet.ingestion.domain.model.VehicleId;
+import com.simon.fleet.ingestion.domain.model.VehiclePlate;
 import com.simon.fleet.ingestion.domain.port.in.PurgeVehicleDataUseCase;
 import com.simon.fleet.ingestion.domain.port.out.TelemetryCachePort;
 import com.simon.fleet.ingestion.domain.port.out.TelemetryEventPublisherPort;
@@ -17,9 +17,9 @@ public class PurgeVehicleDataService implements PurgeVehicleDataUseCase {
     private final TelemetryEventPublisherPort eventPublisherPort;
 
     @Override
-    public void purgeVehicle(VehicleId vehicleId) {
-        cachePort.clearVehicleCache(vehicleId);
-        historyRepositoryPort.purgeByVehicle(vehicleId);
-        eventPublisherPort.publishCacheCleared(vehicleId);
+    public void purgeVehicle(VehiclePlate plate) {
+        cachePort.clearVehicleCache(plate);
+        historyRepositoryPort.purgeByVehicle(plate);
+        eventPublisherPort.publishCacheCleared(plate);
     }
 }

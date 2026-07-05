@@ -3,7 +3,7 @@ package com.simon.fleet.ingestion.infrastructure.cache.redis;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.simon.fleet.ingestion.domain.model.TelemetryPoint;
-import com.simon.fleet.ingestion.domain.model.VehicleId;
+import com.simon.fleet.ingestion.domain.model.VehiclePlate;
 import com.simon.fleet.ingestion.domain.port.out.TelemetryCachePort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,15 +32,15 @@ public class RedisTelemetryCacheAdapter implements TelemetryCachePort {
     private long lastPositionTtlSeconds;
 
     @Override
-    public Optional<TelemetryPoint> findLastKnownPosition(VehicleId vehicleId) {
-        String json = redisTemplate.opsForValue().get(RedisKeys.lastPosition(vehicleId));
+    public Optional<TelemetryPoint> findLastKnownPosition(VehiclePlate plate) {
+        String json = redisTemplate.opsForValue().get(RedisKeys.lastPosition(plate));
         if (json == null) {
             return Optional.empty();
         }
         try {
             return Optional.of(objectMapper.readValue(json, TelemetryPoint.class));
         } catch (JsonProcessingException e) {
-            log.warn("No se pudo deserializar la última posición cacheada de {}", vehicleId, e);
+            log.warn("No se pudo deserializar la última posición cacheada de {}", plate, e);
             return Optional.empty();
         }
     }
@@ -50,20 +50,20 @@ public class RedisTelemetryCacheAdapter implements TelemetryCachePort {
         try {
             String json = objectMapper.writeValueAsString(point);
             redisTemplate.opsForValue().set(
-                    RedisKeys.lastPosition(point.vehicleId()), json, Duration.ofSeconds(lastPositionTtlSeconds));
+                    RedisKeys.lastPosition(point.plate()), json, Duration.ofSeconds(lastPositionTtlSeconds));
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("No se pudo serializar el TelemetryPoint para cachearlo", e);
         }
     }
 
     @Override
-    public void clearVehicleCache(VehicleId vehicleId) {
-        redisTemplate.delete(RedisKeys.lastPosition(vehicleId));
+    public void clearVehicleCache(VehiclePlate plate) {
+        redisTemplate.delete(RedisKeys.lastPosition(plate));
 
         // KEYS bloquea el servidor si hay millones de claves; para el volumen de este
         // prototipo es aceptable, pero en producción esto se reemplazaría por un SCAN
         // incremental (Cursor) para no afectar la latencia de otros clientes de Redis.
-        Collection<String> dedupeKeys = redisTemplate.keys(RedisKeys.dedupePattern(vehicleId));
+        Collection<String> dedupeKeys = redisTemplate.keys(RedisKeys.dedupePattern(plate));
         if (dedupeKeys != null && !dedupeKeys.isEmpty()) {
             redisTemplate.delete(dedupeKeys);
         }

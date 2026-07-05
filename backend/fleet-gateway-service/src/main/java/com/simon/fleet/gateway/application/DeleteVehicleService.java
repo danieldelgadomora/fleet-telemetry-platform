@@ -2,7 +2,7 @@ package com.simon.fleet.gateway.application;
 
 import com.simon.fleet.gateway.domain.exception.VehicleNotFoundException;
 import com.simon.fleet.gateway.domain.model.Vehicle;
-import com.simon.fleet.gateway.domain.model.VehicleId;
+import com.simon.fleet.gateway.domain.model.VehiclePlate;
 import com.simon.fleet.gateway.domain.port.in.DeleteVehicleUseCase;
 import com.simon.fleet.gateway.domain.port.out.VehicleLifecycleEventPublisherPort;
 import com.simon.fleet.gateway.domain.port.out.VehicleRepositoryPort;
@@ -17,13 +17,13 @@ public class DeleteVehicleService implements DeleteVehicleUseCase {
     private final VehicleLifecycleEventPublisherPort eventPublisherPort;
 
     @Override
-    public Vehicle requestDeletion(VehicleId vehicleId) {
-        Vehicle vehicle = repositoryPort.findById(vehicleId)
-                .orElseThrow(() -> new VehicleNotFoundException(vehicleId));
+    public Vehicle requestDeletion(VehiclePlate plate) {
+        Vehicle vehicle = repositoryPort.findById(plate)
+                .orElseThrow(() -> new VehicleNotFoundException(plate));
 
         vehicle.requestDeletion();
         repositoryPort.save(vehicle);
-        eventPublisherPort.publishDeletionRequested(vehicleId);
+        eventPublisherPort.publishDeletionRequested(plate);
         return vehicle;
     }
 }

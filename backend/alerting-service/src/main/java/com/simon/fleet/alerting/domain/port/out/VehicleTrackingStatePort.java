@@ -1,6 +1,6 @@
 package com.simon.fleet.alerting.domain.port.out;
 
-import com.simon.fleet.alerting.domain.model.VehicleId;
+import com.simon.fleet.alerting.domain.model.VehiclePlate;
 import com.simon.fleet.alerting.domain.model.VehicleTrackingState;
 
 import java.util.Optional;
@@ -12,10 +12,10 @@ import java.util.Optional;
  */
 public interface VehicleTrackingStatePort {
 
-    Optional<VehicleTrackingState> find(VehicleId vehicleId);
+    Optional<VehicleTrackingState> find(VehiclePlate plate);
 
     void save(VehicleTrackingState state);
 
     /** Participante de la Saga de borrado: limpia el estado de tracking del vehículo. */
-    void clear(VehicleId vehicleId);
+    void clear(VehiclePlate plate);
 }

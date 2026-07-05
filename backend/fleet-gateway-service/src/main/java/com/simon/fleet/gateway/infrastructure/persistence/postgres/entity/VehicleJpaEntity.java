@@ -25,7 +25,7 @@ import java.time.Instant;
 public class VehicleJpaEntity {
 
     @Id
-    private String id;
+    private String plate;
 
     @Column(nullable = false)
     private String status;

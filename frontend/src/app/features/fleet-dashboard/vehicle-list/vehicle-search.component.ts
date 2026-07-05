@@ -39,11 +39,11 @@ export class VehicleSearchComponent {
 
   readonly selectedVehicle = this.fleetStore.selectedVehicle;
 
-  /** Vehículos que coinciden con el término de búsqueda (substring de `vehicleId`, sin distinguir mayúsculas). */
+  /** Vehículos que coinciden con el término de búsqueda (substring de `plate`, sin distinguir mayúsculas). */
   readonly filteredVehicles = computed(() => {
     const term = this.searchTerm().trim().toLowerCase();
     const vehicles = this.fleetStore.vehicles();
-    return term ? vehicles.filter((v) => v.vehicleId.toLowerCase().includes(term)) : vehicles;
+    return term ? vehicles.filter((v) => v.plate.toLowerCase().includes(term)) : vehicles;
   });
 
   /** Abre el diálogo de alta; el listado se actualiza solo vía el signal del store. */

@@ -9,11 +9,11 @@ import java.time.Instant;
  * vehículo, confirmando con su propio evento de finalización ({@link VehicleCacheClearedEvent},
  * {@link VehicleDataPurgedEvent}).
  *
- * @param vehicleId   vehículo a eliminar.
+ * @param plate       placa del vehículo a eliminar.
  * @param requestedAt momento en que se solicitó el borrado.
  */
 public record VehicleDeletionRequestedEvent(
-        String vehicleId,
+        String plate,
         Instant requestedAt
 ) {
 }

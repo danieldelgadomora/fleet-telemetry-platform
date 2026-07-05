@@ -2,7 +2,7 @@ package com.simon.fleet.alerting.infrastructure.messaging.rabbitmq.consumer;
 
 import com.simon.fleet.alerting.domain.port.in.EvaluateTelemetryUseCase;
 import com.simon.fleet.alerting.domain.model.Coordinates;
-import com.simon.fleet.alerting.domain.model.VehicleId;
+import com.simon.fleet.alerting.domain.model.VehiclePlate;
 import com.simon.fleet.alerting.domain.model.VehicleReading;
 import com.simon.fleet.alerting.infrastructure.messaging.rabbitmq.config.RabbitMqConfig;
 import com.simon.fleet.contracts.telemetry.TelemetryReceivedEvent;
@@ -27,7 +27,7 @@ public class TelemetryEvaluationConsumer {
     @RabbitListener(queues = RabbitMqConfig.EVALUATE_QUEUE)
     public void onTelemetryReceived(TelemetryReceivedEvent event) {
         VehicleReading reading = new VehicleReading(
-                new VehicleId(event.vehicleId()),
+                new VehiclePlate(event.plate()),
                 new Coordinates(event.lat(), event.lng()),
                 event.recordedAt()
         );
@@ -35,7 +35,7 @@ public class TelemetryEvaluationConsumer {
         try {
             evaluateTelemetryUseCase.evaluate(reading);
         } catch (RuntimeException e) {
-            log.error("Falló evaluando alertas para vehicleId={}, enviando a DLQ", event.vehicleId(), e);
+            log.error("Falló evaluando alertas para plate={}, enviando a DLQ", event.plate(), e);
             throw new AmqpRejectAndDontRequeueException("Evaluación de alertas falló, ver DLQ", e);
         }
     }

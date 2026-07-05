@@ -1,7 +1,7 @@
 package com.simon.fleet.alerting.domain.port.out;
 
 import com.simon.fleet.alerting.domain.model.Alert;
-import com.simon.fleet.alerting.domain.model.VehicleId;
+import com.simon.fleet.alerting.domain.model.VehiclePlate;
 
 /**
  * Puerto de salida (driven) hacia RabbitMQ. Publica hechos de negocio (una alerta generada, o
@@ -13,5 +13,5 @@ public interface AlertEventPublisherPort {
     void publishRaised(Alert alert);
 
     /** Confirma, dentro de la Saga de borrado, que ya se purgaron las alertas del vehículo. */
-    void publishDataPurged(VehicleId vehicleId);
+    void publishDataPurged(VehiclePlate plate);
 }

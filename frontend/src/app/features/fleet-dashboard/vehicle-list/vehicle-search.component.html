@@ -2,8 +2,8 @@
   <div class="vehicle-search__toolbar">
     <mat-form-field appearance="outline" class="vehicle-search__field" subscriptSizing="dynamic">
       <mat-icon matPrefix>search</mat-icon>
-      <mat-label>Buscar por id</mat-label>
-      <input matInput [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" placeholder="ej. v1" />
+      <mat-label>Buscar por placa</mat-label>
+      <input matInput [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" placeholder="ej. ABC123" />
     </mat-form-field>
     <button mat-flat-button color="primary" (click)="abrirRegistro()">
       <mat-icon>add</mat-icon>
@@ -16,7 +16,7 @@
   </p>
 
   <div class="vehicle-search__list">
-    @for (vehicle of filteredVehicles(); track vehicle.vehicleId) {
+    @for (vehicle of filteredVehicles(); track vehicle.plate) {
       <app-vehicle-list-item [vehicle]="vehicle" />
     } @empty {
       <p class="vehicle-search__empty">Sin vehículos que coincidan con la búsqueda.</p>

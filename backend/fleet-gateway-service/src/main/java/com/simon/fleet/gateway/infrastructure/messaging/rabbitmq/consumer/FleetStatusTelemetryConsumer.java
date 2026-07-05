@@ -1,7 +1,7 @@
 package com.simon.fleet.gateway.infrastructure.messaging.rabbitmq.consumer;
 
 import com.simon.fleet.contracts.telemetry.TelemetryReceivedEvent;
-import com.simon.fleet.gateway.domain.model.VehicleId;
+import com.simon.fleet.gateway.domain.model.VehiclePlate;
 import com.simon.fleet.gateway.domain.port.in.HandleTelemetryReceivedUseCase;
 import com.simon.fleet.gateway.infrastructure.messaging.rabbitmq.config.RabbitMqConfig;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +22,6 @@ public class FleetStatusTelemetryConsumer {
     @RabbitListener(queues = RabbitMqConfig.FLEET_STATUS_TELEMETRY_QUEUE)
     public void onTelemetryReceived(TelemetryReceivedEvent event) {
         handleTelemetryReceivedUseCase.onTelemetryReceived(
-                new VehicleId(event.vehicleId()), event.lat(), event.lng(), event.recordedAt());
+                new VehiclePlate(event.plate()), event.lat(), event.lng(), event.recordedAt());
     }
 }

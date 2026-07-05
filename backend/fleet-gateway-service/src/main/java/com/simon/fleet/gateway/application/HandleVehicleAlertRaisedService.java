@@ -1,6 +1,6 @@
 package com.simon.fleet.gateway.application;
 
-import com.simon.fleet.gateway.domain.model.VehicleId;
+import com.simon.fleet.gateway.domain.model.VehiclePlate;
 import com.simon.fleet.gateway.domain.port.in.HandleVehicleAlertRaisedUseCase;
 import com.simon.fleet.gateway.domain.port.out.FleetStatusBroadcastPort;
 import com.simon.fleet.gateway.domain.port.out.VehicleRepositoryPort;
@@ -17,12 +17,12 @@ public class HandleVehicleAlertRaisedService implements HandleVehicleAlertRaised
     private final FleetStatusBroadcastPort fleetStatusBroadcastPort;
 
     @Override
-    public void onAlertRaised(VehicleId vehicleId, Instant raisedAt) {
-        boolean updated = repositoryPort.markInAlert(vehicleId);
+    public void onAlertRaised(VehiclePlate plate, Instant raisedAt) {
+        boolean updated = repositoryPort.markInAlert(plate);
         if (!updated) {
-            repositoryPort.registerIfAbsent(vehicleId, raisedAt);
-            repositoryPort.markInAlert(vehicleId);
+            repositoryPort.registerIfAbsent(plate, raisedAt);
+            repositoryPort.markInAlert(plate);
         }
-        repositoryPort.findById(vehicleId).ifPresent(fleetStatusBroadcastPort::broadcastStatus);
+        repositoryPort.findById(plate).ifPresent(fleetStatusBroadcastPort::broadcastStatus);
     }
 }

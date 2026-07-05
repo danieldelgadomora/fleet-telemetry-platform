@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AlertJpaRepository extends JpaRepository<AlertJpaEntity, String> {
 
-    void deleteByVehicleId(String vehicleId);
+    void deleteByPlate(String plate);
 }

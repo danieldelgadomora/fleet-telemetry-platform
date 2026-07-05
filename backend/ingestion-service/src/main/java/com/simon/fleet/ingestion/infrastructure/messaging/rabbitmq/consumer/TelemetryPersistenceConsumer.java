@@ -4,7 +4,7 @@ import com.simon.fleet.contracts.telemetry.TelemetryReceivedEvent;
 import com.simon.fleet.ingestion.domain.port.in.PersistTelemetryHistoryUseCase;
 import com.simon.fleet.ingestion.domain.model.Coordinates;
 import com.simon.fleet.ingestion.domain.model.TelemetryPoint;
-import com.simon.fleet.ingestion.domain.model.VehicleId;
+import com.simon.fleet.ingestion.domain.model.VehiclePlate;
 import com.simon.fleet.ingestion.infrastructure.messaging.rabbitmq.config.RabbitMqConfig;
 import com.simon.fleet.ingestion.infrastructure.persistence.mongo.adapter.MongoUnavailableException;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class TelemetryPersistenceConsumer {
     @RabbitListener(queues = RabbitMqConfig.PERSIST_QUEUE)
     public void onTelemetryReceived(TelemetryReceivedEvent event) {
         TelemetryPoint point = new TelemetryPoint(
-                new VehicleId(event.vehicleId()),
+                new VehiclePlate(event.plate()),
                 new Coordinates(event.lat(), event.lng()),
                 event.recordedAt()
         );
@@ -37,7 +37,7 @@ public class TelemetryPersistenceConsumer {
         try {
             persistTelemetryHistoryUseCase.persist(point);
         } catch (MongoUnavailableException e) {
-            log.warn("Mongo no disponible (circuit breaker), enviando a DLQ vehicleId={}", event.vehicleId(), e);
+            log.warn("Mongo no disponible (circuit breaker), enviando a DLQ plate={}", event.plate(), e);
             throw new AmqpRejectAndDontRequeueException("Persistencia en Mongo falló, ver DLQ", e);
         }
     }

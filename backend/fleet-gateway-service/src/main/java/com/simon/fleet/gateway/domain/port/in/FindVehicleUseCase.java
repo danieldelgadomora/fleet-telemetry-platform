@@ -1,7 +1,7 @@
 package com.simon.fleet.gateway.domain.port.in;
 
 import com.simon.fleet.gateway.domain.model.Vehicle;
-import com.simon.fleet.gateway.domain.model.VehicleId;
+import com.simon.fleet.gateway.domain.model.VehiclePlate;
 
 import java.util.Optional;
 
@@ -11,5 +11,5 @@ import java.util.Optional;
  */
 public interface FindVehicleUseCase {
 
-    Optional<Vehicle> findById(VehicleId vehicleId);
+    Optional<Vehicle> findById(VehiclePlate plate);
 }

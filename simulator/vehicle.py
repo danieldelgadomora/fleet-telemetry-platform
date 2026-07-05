@@ -23,7 +23,7 @@ class MovementState(StrEnum):
 
 @dataclass
 class Vehicle:
-    vehicle_id: str
+    plate: str
     state: MovementState
     waypoints: list[tuple[float, float]]
     rng: random.Random
@@ -83,7 +83,7 @@ def build_fleet(config: SimulatorConfig) -> list[Vehicle]:
         start_lat, start_lng = waypoints[0]
         fleet.append(
             Vehicle(
-                vehicle_id=f"v{index + 1}",
+                plate=f"v{index + 1}",
                 state=state,
                 waypoints=waypoints,
                 rng=rng,

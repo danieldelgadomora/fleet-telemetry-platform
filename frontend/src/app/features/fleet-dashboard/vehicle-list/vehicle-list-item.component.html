@@ -4,7 +4,7 @@
   (click)="seleccionar()"
 >
   <div class="vehicle-list-item__main">
-    <span class="vehicle-list-item__id">{{ vehicle.vehicleId }}</span>
+    <span class="vehicle-list-item__id">{{ vehicle.plate }}</span>
     <app-status-badge [presentation]="presentation" />
   </div>
   <span class="vehicle-list-item__time">{{ vehicle.lastReportedAt | relativeTime }}</span>

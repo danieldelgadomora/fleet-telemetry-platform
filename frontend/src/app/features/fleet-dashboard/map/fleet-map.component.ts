@@ -27,7 +27,7 @@ interface MarkerEntry {
 })
 export class FleetMapComponent {
   private readonly fleetStore = inject(FleetStoreService);
-  private readonly markersByVehicleId = new Map<string, MarkerEntry>();
+  private readonly markersByPlate = new Map<string, MarkerEntry>();
   private map?: L.Map;
 
   /** Capa oscura de tiles (sin API key) y vista inicial centrada en Bogotá. */
@@ -50,7 +50,7 @@ export class FleetMapComponent {
     effect(() => {
       const vehicles = this.fleetStore.vehicles();
       this.syncMarkers(vehicles);
-      this.focusSelected(this.fleetStore.selectedVehicleId(), vehicles);
+      this.focusSelected(this.fleetStore.selectedPlate(), vehicles);
     });
   }
 
@@ -69,11 +69,11 @@ export class FleetMapComponent {
     if (!this.map) {
       return;
     }
-    const idsPresentes = new Set(vehicles.map((v) => v.vehicleId));
-    for (const [vehicleId, entry] of this.markersByVehicleId) {
-      if (!idsPresentes.has(vehicleId)) {
+    const idsPresentes = new Set(vehicles.map((v) => v.plate));
+    for (const [plate, entry] of this.markersByPlate) {
+      if (!idsPresentes.has(plate)) {
         entry.marker.remove();
-        this.markersByVehicleId.delete(vehicleId);
+        this.markersByPlate.delete(plate);
       }
     }
 
@@ -81,11 +81,11 @@ export class FleetMapComponent {
       if (!hasPosition(vehicle)) {
         continue;
       }
-      const entry = this.markersByVehicleId.get(vehicle.vehicleId);
+      const entry = this.markersByPlate.get(vehicle.plate);
       if (!entry) {
         const marker = MarkerBuilder.build(vehicle);
         marker.addTo(this.map);
-        this.markersByVehicleId.set(vehicle.vehicleId, { marker, movementStatus: vehicle.movementStatus });
+        this.markersByPlate.set(vehicle.plate, { marker, movementStatus: vehicle.movementStatus });
         continue;
       }
       entry.marker.setLatLng([vehicle.lastLat, vehicle.lastLng]);
@@ -102,12 +102,12 @@ export class FleetMapComponent {
    * vehículo seleccionado no tiene posición reportada, cierra cualquier popup abierto en vez de
    * dejar visible la información de una selección anterior.
    */
-  private focusSelected(vehicleId: string | null, vehicles: Vehicle[]): void {
+  private focusSelected(plate: string | null, vehicles: Vehicle[]): void {
     if (!this.map) {
       return;
     }
-    const vehicle = vehicleId ? vehicles.find((v) => v.vehicleId === vehicleId) : undefined;
-    const entry = vehicleId ? this.markersByVehicleId.get(vehicleId) : undefined;
+    const vehicle = plate ? vehicles.find((v) => v.plate === plate) : undefined;
+    const entry = plate ? this.markersByPlate.get(plate) : undefined;
 
     if (!vehicle || !hasPosition(vehicle) || !entry) {
       this.map.closePopup();

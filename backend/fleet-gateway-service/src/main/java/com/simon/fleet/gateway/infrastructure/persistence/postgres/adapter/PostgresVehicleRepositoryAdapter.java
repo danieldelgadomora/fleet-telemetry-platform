@@ -2,7 +2,7 @@ package com.simon.fleet.gateway.infrastructure.persistence.postgres.adapter;
 
 import com.simon.fleet.gateway.domain.model.MovementStatus;
 import com.simon.fleet.gateway.domain.model.Vehicle;
-import com.simon.fleet.gateway.domain.model.VehicleId;
+import com.simon.fleet.gateway.domain.model.VehiclePlate;
 import com.simon.fleet.gateway.domain.model.VehicleStatus;
 import com.simon.fleet.gateway.domain.port.out.VehicleRepositoryPort;
 import com.simon.fleet.gateway.infrastructure.persistence.postgres.entity.VehicleJpaEntity;
@@ -22,7 +22,7 @@ public class PostgresVehicleRepositoryAdapter implements VehicleRepositoryPort {
     private final VehicleJpaRepository jpaRepository;
 
     @Override
-    public Optional<Vehicle> findById(VehicleId id) {
+    public Optional<Vehicle> findById(VehiclePlate id) {
         return jpaRepository.findById(id.value()).map(this::toDomain);
     }
 
@@ -43,38 +43,38 @@ public class PostgresVehicleRepositoryAdapter implements VehicleRepositoryPort {
 
     @Override
     @Transactional
-    public void markCacheCleared(VehicleId id, Instant when) {
+    public void markCacheCleared(VehiclePlate id, Instant when) {
         jpaRepository.markCacheCleared(id.value(), when);
     }
 
     @Override
     @Transactional
-    public void markDataPurged(VehicleId id, Instant when) {
+    public void markDataPurged(VehiclePlate id, Instant when) {
         jpaRepository.markDataPurged(id.value(), when);
     }
 
     @Override
     @Transactional
-    public boolean completeIfBothConfirmed(VehicleId id) {
+    public boolean completeIfBothConfirmed(VehiclePlate id) {
         int rowsUpdated = jpaRepository.completeIfBothConfirmed(id.value());
         return rowsUpdated > 0;
     }
 
     @Override
     @Transactional
-    public void registerIfAbsent(VehicleId id, Instant registeredAt) {
+    public void registerIfAbsent(VehiclePlate id, Instant registeredAt) {
         jpaRepository.registerIfAbsent(id.value(), registeredAt);
     }
 
     @Override
     @Transactional
-    public boolean updatePosition(VehicleId id, double lat, double lng, Instant when) {
+    public boolean updatePosition(VehiclePlate id, double lat, double lng, Instant when) {
         return jpaRepository.updatePosition(id.value(), lat, lng, when) > 0;
     }
 
     @Override
     @Transactional
-    public boolean markInAlert(VehicleId id) {
+    public boolean markInAlert(VehiclePlate id) {
         return jpaRepository.markInAlert(id.value()) > 0;
     }
 
@@ -87,7 +87,7 @@ public class PostgresVehicleRepositoryAdapter implements VehicleRepositoryPort {
 
     private Vehicle toDomain(VehicleJpaEntity entity) {
         return Vehicle.rehydrate(
-                new VehicleId(entity.getId()),
+                new VehiclePlate(entity.getPlate()),
                 VehicleStatus.valueOf(entity.getStatus()),
                 entity.getRegisteredAt(),
                 entity.getCacheClearedAt(),

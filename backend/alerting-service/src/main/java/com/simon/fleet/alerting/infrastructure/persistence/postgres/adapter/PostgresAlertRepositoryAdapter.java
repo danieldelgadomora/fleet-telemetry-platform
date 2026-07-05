@@ -1,7 +1,7 @@
 package com.simon.fleet.alerting.infrastructure.persistence.postgres.adapter;
 
 import com.simon.fleet.alerting.domain.model.Alert;
-import com.simon.fleet.alerting.domain.model.VehicleId;
+import com.simon.fleet.alerting.domain.model.VehiclePlate;
 import com.simon.fleet.alerting.domain.port.out.AlertRepositoryPort;
 import com.simon.fleet.alerting.infrastructure.persistence.postgres.entity.AlertJpaEntity;
 import com.simon.fleet.alerting.infrastructure.persistence.postgres.repository.AlertJpaRepository;
@@ -19,7 +19,7 @@ public class PostgresAlertRepositoryAdapter implements AlertRepositoryPort {
     public void save(Alert alert) {
         AlertJpaEntity entity = new AlertJpaEntity(
                 alert.getAlertId(),
-                alert.getVehicleId().value(),
+                alert.getPlate().value(),
                 alert.getRuleCode(),
                 alert.getMessage(),
                 alert.getRaisedAt()
@@ -28,13 +28,13 @@ public class PostgresAlertRepositoryAdapter implements AlertRepositoryPort {
     }
 
     /**
-     * {@code deleteByVehicleId} es una consulta de borrado derivada de Spring Data JPA: a
+     * {@code deleteByPlate} es una consulta de borrado derivada de Spring Data JPA: a
      * diferencia de {@code save}/{@code findById}, este tipo de método necesita una
      * transacción explícita para poder ejecutar el {@code DELETE}.
      */
     @Override
     @Transactional
-    public void purgeByVehicle(VehicleId vehicleId) {
-        jpaRepository.deleteByVehicleId(vehicleId.value());
+    public void purgeByVehicle(VehiclePlate plate) {
+        jpaRepository.deleteByPlate(plate.value());
     }
 }

@@ -2,10 +2,10 @@
 <form [formGroup]="form" (ngSubmit)="registrar()">
   <mat-dialog-content>
     <mat-form-field appearance="outline" class="register-form__field">
-      <mat-label>Id del vehículo</mat-label>
-      <input matInput formControlName="vehicleId" placeholder="ej. v1" />
-      @if (form.controls.vehicleId.invalid && form.controls.vehicleId.touched) {
-        <mat-error>Ingresa un id válido, sin espacios.</mat-error>
+      <mat-label>Placa del vehículo</mat-label>
+      <input matInput formControlName="plate" placeholder="ej. ABC123" />
+      @if (form.controls.plate.invalid && form.controls.plate.touched) {
+        <mat-error>Ingresa una placa válida, sin espacios.</mat-error>
       }
     </mat-form-field>
   </mat-dialog-content>

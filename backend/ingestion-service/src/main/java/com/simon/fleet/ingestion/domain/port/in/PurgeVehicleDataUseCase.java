@@ -1,6 +1,6 @@
 package com.simon.fleet.ingestion.domain.port.in;
 
-import com.simon.fleet.ingestion.domain.model.VehicleId;
+import com.simon.fleet.ingestion.domain.model.VehiclePlate;
 
 /**
  * Puerto de entrada (driving): participante de la Saga coreografiada de borrado de vehículo
@@ -15,5 +15,5 @@ public interface PurgeVehicleDataUseCase {
      * Idempotente: puede llamarse más de una vez para el mismo vehículo (por reintentos de
      * RabbitMQ) sin efectos secundarios distintos a la primera vez.
      */
-    void purgeVehicle(VehicleId vehicleId);
+    void purgeVehicle(VehiclePlate plate);
 }
