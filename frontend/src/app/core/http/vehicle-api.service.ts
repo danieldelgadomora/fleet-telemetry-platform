@@ -19,17 +19,17 @@ export class VehicleApiService {
     return this.http.get<VehicleDto[]>(this.baseUrl).pipe(map((dtos) => dtos.map(mapVehicleDto)));
   }
 
-  /** Registra un vehículo nuevo. Rechaza (409, vía `ApiError`) si el id ya está registrado. */
-  register(vehicleId: string): Observable<Vehicle> {
+  /** Registra un vehículo nuevo. Rechaza (409, vía `ApiError`) si la placa ya está registrada. */
+  register(plate: string): Observable<Vehicle> {
     return this.http
-      .post<VehicleDto>(this.baseUrl, { vehicle_id: vehicleId })
+      .post<VehicleDto>(this.baseUrl, { plate })
       .pipe(map(mapVehicleDto));
   }
 
   /** Arranca la Saga de eliminación del vehículo; el resultado inmediato queda en `PENDING_DELETION`. */
-  remove(vehicleId: string): Observable<Vehicle> {
+  remove(plate: string): Observable<Vehicle> {
     return this.http
-      .delete<VehicleDto>(`${this.baseUrl}/${encodeURIComponent(vehicleId)}`)
+      .delete<VehicleDto>(`${this.baseUrl}/${encodeURIComponent(plate)}`)
       .pipe(map(mapVehicleDto));
   }
 }

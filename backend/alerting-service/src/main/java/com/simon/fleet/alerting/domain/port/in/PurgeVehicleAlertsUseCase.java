@@ -1,6 +1,6 @@
 package com.simon.fleet.alerting.domain.port.in;
 
-import com.simon.fleet.alerting.domain.model.VehicleId;
+import com.simon.fleet.alerting.domain.model.VehiclePlate;
 
 /**
  * Puerto de entrada (driving): participante de la Saga coreografiada de borrado de vehículo,
@@ -10,5 +10,5 @@ import com.simon.fleet.alerting.domain.model.VehicleId;
 public interface PurgeVehicleAlertsUseCase {
 
     /** Idempotente: puede llamarse más de una vez para el mismo vehículo sin efectos extra. */
-    void purge(VehicleId vehicleId);
+    void purge(VehiclePlate plate);
 }

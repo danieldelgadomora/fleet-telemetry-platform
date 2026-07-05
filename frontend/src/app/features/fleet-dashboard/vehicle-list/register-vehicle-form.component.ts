@@ -32,7 +32,7 @@ export class RegisterVehicleFormComponent {
   private readonly dialogRef = inject(MatDialogRef<RegisterVehicleFormComponent>);
 
   readonly form = this.formBuilder.nonNullable.group({
-    vehicleId: ['', [Validators.required, Validators.pattern(/^\S+$/)]],
+    plate: ['', [Validators.required, Validators.pattern(/^\S+$/)]],
   });
 
   /** Envía el alta; si tiene éxito cierra el diálogo, si el backend la rechaza muestra el error. */
@@ -41,10 +41,10 @@ export class RegisterVehicleFormComponent {
       this.form.markAllAsTouched();
       return;
     }
-    const vehicleId = this.form.getRawValue().vehicleId;
-    this.fleetStore.registerVehicle(vehicleId).subscribe({
+    const plate = this.form.getRawValue().plate;
+    this.fleetStore.registerVehicle(plate).subscribe({
       next: () => {
-        this.snackBar.open(`Vehículo ${vehicleId} registrado.`, 'Cerrar', {
+        this.snackBar.open(`Vehículo ${plate} registrado.`, 'Cerrar', {
           duration: 3000,
           panelClass: 'snackbar-success',
         });

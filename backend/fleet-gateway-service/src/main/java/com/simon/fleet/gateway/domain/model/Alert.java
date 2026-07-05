@@ -8,5 +8,5 @@ import java.time.Instant;
  * clase con la de alerting-service): cada servicio guarda lo que necesita para su propio
  * propósito — aquí, poder listar el historial reciente sin depender de una consulta síncrona.
  */
-public record Alert(String alertId, VehicleId vehicleId, String ruleCode, String message, Instant raisedAt) {
+public record Alert(String alertId, VehiclePlate plate, String ruleCode, String message, Instant raisedAt) {
 }

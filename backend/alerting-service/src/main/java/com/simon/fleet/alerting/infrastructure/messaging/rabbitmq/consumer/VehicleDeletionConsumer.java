@@ -1,7 +1,7 @@
 package com.simon.fleet.alerting.infrastructure.messaging.rabbitmq.consumer;
 
 import com.simon.fleet.alerting.domain.port.in.PurgeVehicleAlertsUseCase;
-import com.simon.fleet.alerting.domain.model.VehicleId;
+import com.simon.fleet.alerting.domain.model.VehiclePlate;
 import com.simon.fleet.alerting.infrastructure.messaging.rabbitmq.config.RabbitMqConfig;
 import com.simon.fleet.contracts.lifecycle.VehicleDeletionRequestedEvent;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +22,6 @@ public class VehicleDeletionConsumer {
 
     @RabbitListener(queues = RabbitMqConfig.VEHICLE_DELETION_QUEUE)
     public void onVehicleDeletionRequested(VehicleDeletionRequestedEvent event) {
-        purgeVehicleAlertsUseCase.purge(new VehicleId(event.vehicleId()));
+        purgeVehicleAlertsUseCase.purge(new VehiclePlate(event.plate()));
     }
 }

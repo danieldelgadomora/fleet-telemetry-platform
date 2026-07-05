@@ -15,7 +15,7 @@ import java.time.Instant;
 public class Alert {
 
     private final String alertId;
-    private final VehicleId vehicleId;
+    private final VehiclePlate plate;
     private final String ruleCode;
     private final String message;
     private final Instant raisedAt;

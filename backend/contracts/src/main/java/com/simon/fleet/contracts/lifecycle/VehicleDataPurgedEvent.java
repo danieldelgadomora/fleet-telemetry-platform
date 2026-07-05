@@ -8,11 +8,11 @@ import java.time.Instant;
  * {@link VehicleCacheClearedEvent}, es la señal que fleet-gateway-service necesita para marcar
  * el vehículo como definitivamente eliminado.
  *
- * @param vehicleId vehículo cuyas alertas ya fueron purgadas.
- * @param purgedAt  momento en que se completó la purga.
+ * @param plate    placa del vehículo cuyas alertas ya fueron purgadas.
+ * @param purgedAt momento en que se completó la purga.
  */
 public record VehicleDataPurgedEvent(
-        String vehicleId,
+        String plate,
         Instant purgedAt
 ) {
 }

@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Alta de un vehículo en el registro")
 public record RegisterVehicleRequestDto(
-        @Schema(description = "Identificador del vehículo", example = "v1")
-        @JsonProperty("vehicle_id") String vehicleId
+        @Schema(description = "Placa del vehículo", example = "ABC123")
+        @JsonProperty("plate") String plate
 ) {
 }

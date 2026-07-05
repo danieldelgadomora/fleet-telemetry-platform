@@ -31,7 +31,7 @@ public class RedisTelemetryDeduplicationAdapter implements TelemetryDeduplicatio
     @Override
     public boolean isDuplicate(TelemetryPoint point) {
         long bucket = point.recordedAt().getEpochSecond() / windowSeconds;
-        String key = RedisKeys.dedupe(point.vehicleId(), point.coordinates(), bucket);
+        String key = RedisKeys.dedupe(point.plate(), point.coordinates(), bucket);
 
         Boolean firstTimeSeen = redisTemplate.opsForValue()
                 .setIfAbsent(key, "1", Duration.ofSeconds(ttlSeconds));

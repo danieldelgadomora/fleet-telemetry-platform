@@ -45,12 +45,12 @@ export class VehicleListItemComponent {
   }
 
   get isSelected(): boolean {
-    return this.fleetStore.selectedVehicleId() === this.vehicle.vehicleId;
+    return this.fleetStore.selectedPlate() === this.vehicle.plate;
   }
 
   /** Selecciona esta fila (o la deselecciona si ya estaba seleccionada) para verla en el mapa. */
   seleccionar(): void {
-    this.fleetStore.selectVehicle(this.isSelected ? null : this.vehicle.vehicleId);
+    this.fleetStore.selectVehicle(this.isSelected ? null : this.vehicle.plate);
   }
 
   /** Pide confirmación y, si se acepta, arranca la Saga de eliminación del vehículo. */
@@ -58,7 +58,7 @@ export class VehicleListItemComponent {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: 'Eliminar vehículo',
-        message: `¿Eliminar el vehículo "${this.vehicle.vehicleId}"? Esta acción no se puede deshacer.`,
+        message: `¿Eliminar el vehículo "${this.vehicle.plate}"? Esta acción no se puede deshacer.`,
         confirmLabel: 'Eliminar',
       },
     });
@@ -67,7 +67,7 @@ export class VehicleListItemComponent {
       if (!confirmado) {
         return;
       }
-      this.fleetStore.removeVehicle(this.vehicle.vehicleId).subscribe({
+      this.fleetStore.removeVehicle(this.vehicle.plate).subscribe({
         error: (error: ApiError) => this.errorDialog.show(error.message),
       });
     });

@@ -1,6 +1,6 @@
 package com.simon.fleet.gateway.domain.exception;
 
-import com.simon.fleet.gateway.domain.model.VehicleId;
+import com.simon.fleet.gateway.domain.model.VehiclePlate;
 
 /**
  * Se lanza cuando se pide el alta explícita de un vehículo que ya existe en el registro —
@@ -9,7 +9,7 @@ import com.simon.fleet.gateway.domain.model.VehicleId;
  */
 public class VehicleAlreadyRegisteredException extends RuntimeException {
 
-    public VehicleAlreadyRegisteredException(VehicleId vehicleId) {
-        super("Vehículo ya registrado: " + vehicleId.value());
+    public VehicleAlreadyRegisteredException(VehiclePlate plate) {
+        super("Vehículo ya registrado: " + plate.value());
     }
 }

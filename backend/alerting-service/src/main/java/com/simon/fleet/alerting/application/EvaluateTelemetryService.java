@@ -32,7 +32,7 @@ public class EvaluateTelemetryService implements EvaluateTelemetryUseCase {
 
     @Override
     public void evaluate(VehicleReading reading) {
-        Optional<VehicleTrackingState> currentState = trackingStatePort.find(reading.vehicleId());
+        Optional<VehicleTrackingState> currentState = trackingStatePort.find(reading.plate());
 
         for (AlertRule rule : alertRules) {
             AlertEvaluationResult result = rule.evaluate(reading, currentState);

@@ -5,13 +5,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * Representa el payload JSON tal como lo define el enunciado de la prueba: claves en
- * snake_case ({@code vehicle_id}), no en camelCase. Es puramente un contrato HTTP; se traduce
+ * snake_case ({@code plate}), no en camelCase. Es puramente un contrato HTTP; se traduce
  * a {@code TelemetryPoint} en {@code TelemetryRequestMapper} antes de entrar al dominio.
  */
 @Schema(description = "Lectura GPS enviada por un vehículo")
 public record TelemetryRequestDto(
-        @Schema(description = "Identificador del vehículo", example = "v1")
-        @JsonProperty("vehicle_id") String vehicleId,
+        @Schema(description = "Placa del vehículo", example = "ABC123")
+        @JsonProperty("plate") String plate,
 
         @Schema(description = "Latitud en grados decimales", example = "4.6")
         Double lat,

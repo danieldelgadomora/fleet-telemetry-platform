@@ -2,7 +2,7 @@ package com.simon.fleet.gateway.application;
 
 import com.simon.fleet.gateway.domain.exception.VehicleAlreadyRegisteredException;
 import com.simon.fleet.gateway.domain.model.Vehicle;
-import com.simon.fleet.gateway.domain.model.VehicleId;
+import com.simon.fleet.gateway.domain.model.VehiclePlate;
 import com.simon.fleet.gateway.domain.port.in.RegisterVehicleUseCase;
 import com.simon.fleet.gateway.domain.port.out.VehicleRepositoryPort;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +19,11 @@ public class RegisterVehicleService implements RegisterVehicleUseCase {
     private final Clock clock;
 
     @Override
-    public Vehicle register(VehicleId vehicleId) {
-        if (repositoryPort.findById(vehicleId).isPresent()) {
-            throw new VehicleAlreadyRegisteredException(vehicleId);
+    public Vehicle register(VehiclePlate plate) {
+        if (repositoryPort.findById(plate).isPresent()) {
+            throw new VehicleAlreadyRegisteredException(plate);
         }
-        Vehicle vehicle = Vehicle.register(vehicleId, Instant.now(clock));
+        Vehicle vehicle = Vehicle.register(plate, Instant.now(clock));
         repositoryPort.save(vehicle);
         return vehicle;
     }

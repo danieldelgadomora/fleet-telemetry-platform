@@ -2,7 +2,7 @@ import { MovementStatus, VehicleStatus } from './movement-status.model';
 
 /** Forma exacta (snake_case) en la que fleet-gateway-service serializa un vehículo. */
 export interface VehicleDto {
-  vehicle_id: string;
+  plate: string;
   status: string;
   registered_at: string;
   cache_cleared_at: string | null;
@@ -15,7 +15,7 @@ export interface VehicleDto {
 
 /** Vehículo de la flota, en la forma (camelCase) que consume el resto de la aplicación. */
 export interface Vehicle {
-  vehicleId: string;
+  plate: string;
   status: VehicleStatus;
   registeredAt: string;
   cacheClearedAt: string | null;
@@ -29,7 +29,7 @@ export interface Vehicle {
 /** Traduce el DTO tal como llega del backend (REST o WebSocket) al modelo de la aplicación. */
 export function mapVehicleDto(dto: VehicleDto): Vehicle {
   return {
-    vehicleId: dto.vehicle_id,
+    plate: dto.plate,
     status: dto.status as VehicleStatus,
     registeredAt: dto.registered_at,
     cacheClearedAt: dto.cache_cleared_at,

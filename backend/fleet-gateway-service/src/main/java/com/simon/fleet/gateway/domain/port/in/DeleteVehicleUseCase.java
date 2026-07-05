@@ -3,7 +3,7 @@ package com.simon.fleet.gateway.domain.port.in;
 import com.simon.fleet.gateway.domain.exception.InvalidVehicleStateException;
 import com.simon.fleet.gateway.domain.exception.VehicleNotFoundException;
 import com.simon.fleet.gateway.domain.model.Vehicle;
-import com.simon.fleet.gateway.domain.model.VehicleId;
+import com.simon.fleet.gateway.domain.model.VehiclePlate;
 
 /**
  * Puerto de entrada (driving): arranca la Saga de eliminación de un vehículo (orquestador).
@@ -19,5 +19,5 @@ public interface DeleteVehicleUseCase {
      * @throws VehicleNotFoundException     si el vehículo no existe.
      * @throws InvalidVehicleStateException si el vehículo no está {@code ACTIVE}.
      */
-    Vehicle requestDeletion(VehicleId vehicleId);
+    Vehicle requestDeletion(VehiclePlate plate);
 }
