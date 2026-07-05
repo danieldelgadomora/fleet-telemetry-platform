@@ -1,6 +1,6 @@
 package com.simon.fleet.gateway.domain.port.out;
 
-import com.simon.fleet.gateway.domain.model.VehicleId;
+import com.simon.fleet.gateway.domain.model.VehiclePlate;
 
 import java.time.Instant;
 
@@ -13,5 +13,5 @@ import java.time.Instant;
 public interface AlertBroadcastPort {
 
     /** Publica una alerta ya levantada, con los datos necesarios para mostrarla en la UI. */
-    void broadcastAlert(VehicleId vehicleId, String alertId, String ruleCode, String message, Instant raisedAt);
+    void broadcastAlert(VehiclePlate plate, String alertId, String ruleCode, String message, Instant raisedAt);
 }

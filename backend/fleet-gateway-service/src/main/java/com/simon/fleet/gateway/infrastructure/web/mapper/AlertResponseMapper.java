@@ -11,7 +11,7 @@ public final class AlertResponseMapper {
     public static AlertResponseDto toDto(Alert alert) {
         return new AlertResponseDto(
                 alert.alertId(),
-                alert.vehicleId().value(),
+                alert.plate().value(),
                 alert.ruleCode(),
                 alert.message(),
                 alert.raisedAt()

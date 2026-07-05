@@ -1,6 +1,6 @@
 package com.simon.fleet.gateway.domain.exception;
 
-import com.simon.fleet.gateway.domain.model.VehicleId;
+import com.simon.fleet.gateway.domain.model.VehiclePlate;
 
 /**
  * Se lanza cuando se pide una operación sobre un vehículo que no está registrado. El
@@ -8,7 +8,7 @@ import com.simon.fleet.gateway.domain.model.VehicleId;
  */
 public class VehicleNotFoundException extends RuntimeException {
 
-    public VehicleNotFoundException(VehicleId vehicleId) {
-        super("Vehículo no encontrado: " + vehicleId.value());
+    public VehicleNotFoundException(VehiclePlate plate) {
+        super("Vehículo no encontrado: " + plate.value());
     }
 }

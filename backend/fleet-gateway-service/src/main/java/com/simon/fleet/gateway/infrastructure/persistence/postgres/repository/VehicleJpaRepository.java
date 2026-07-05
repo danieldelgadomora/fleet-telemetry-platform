@@ -12,12 +12,12 @@ import java.util.List;
 public interface VehicleJpaRepository extends JpaRepository<VehicleJpaEntity, String> {
 
     @Modifying
-    @Query("UPDATE VehicleJpaEntity v SET v.cacheClearedAt = :when WHERE v.id = :id")
-    void markCacheCleared(@Param("id") String id, @Param("when") Instant when);
+    @Query("UPDATE VehicleJpaEntity v SET v.cacheClearedAt = :when WHERE v.plate = :plate")
+    void markCacheCleared(@Param("plate") String plate, @Param("when") Instant when);
 
     @Modifying
-    @Query("UPDATE VehicleJpaEntity v SET v.dataPurgedAt = :when WHERE v.id = :id")
-    void markDataPurged(@Param("id") String id, @Param("when") Instant when);
+    @Query("UPDATE VehicleJpaEntity v SET v.dataPurgedAt = :when WHERE v.plate = :plate")
+    void markDataPurged(@Param("plate") String plate, @Param("when") Instant when);
 
     /**
      * Atómica y condicionada en SQL: solo transiciona a DELETED si sigue PENDING_DELETION y
@@ -28,10 +28,10 @@ public interface VehicleJpaRepository extends JpaRepository<VehicleJpaEntity, St
     @Modifying
     @Query("""
             UPDATE VehicleJpaEntity v SET v.status = 'DELETED'
-            WHERE v.id = :id AND v.status = 'PENDING_DELETION'
+            WHERE v.plate = :plate AND v.status = 'PENDING_DELETION'
               AND v.cacheClearedAt IS NOT NULL AND v.dataPurgedAt IS NOT NULL
             """)
-    int completeIfBothConfirmed(@Param("id") String id);
+    int completeIfBothConfirmed(@Param("plate") String plate);
 
     /**
      * Upsert atómico: si el vehículo ya existe, no hace nada (evita pisar su estado real con
@@ -39,11 +39,11 @@ public interface VehicleJpaRepository extends JpaRepository<VehicleJpaEntity, St
      */
     @Modifying
     @Query(value = """
-            INSERT INTO vehicles (id, status, registered_at)
-            VALUES (:id, 'ACTIVE', :registeredAt)
-            ON CONFLICT (id) DO NOTHING
+            INSERT INTO vehicles (plate, status, registered_at)
+            VALUES (:plate, 'ACTIVE', :registeredAt)
+            ON CONFLICT (plate) DO NOTHING
             """, nativeQuery = true)
-    void registerIfAbsent(@Param("id") String id, @Param("registeredAt") Instant registeredAt);
+    void registerIfAbsent(@Param("plate") String plate, @Param("registeredAt") Instant registeredAt);
 
     /**
      * El CASE WHEN decide EN_MOVIMIENTO vs DETENIDO comparando con la posición ya guardada, y
@@ -59,14 +59,14 @@ public interface VehicleJpaRepository extends JpaRepository<VehicleJpaEntity, St
                     ELSE 'EN_MOVIMIENTO'
                 END,
                 v.lastLat = :lat, v.lastLng = :lng, v.lastReportedAt = :when
-            WHERE v.id = :id
+            WHERE v.plate = :plate
             """)
-    int updatePosition(@Param("id") String id, @Param("lat") double lat, @Param("lng") double lng,
+    int updatePosition(@Param("plate") String plate, @Param("lat") double lat, @Param("lng") double lng,
                         @Param("when") Instant when);
 
     @Modifying
-    @Query("UPDATE VehicleJpaEntity v SET v.movementStatus = 'ALERTA' WHERE v.id = :id")
-    int markInAlert(@Param("id") String id);
+    @Query("UPDATE VehicleJpaEntity v SET v.movementStatus = 'ALERTA' WHERE v.plate = :plate")
+    int markInAlert(@Param("plate") String plate);
 
     List<VehicleJpaEntity> findAllByStatus(String status);
 }

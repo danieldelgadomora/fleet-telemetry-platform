@@ -1,7 +1,7 @@
 package com.simon.fleet.ingestion.infrastructure.cache.redis;
 
 import com.simon.fleet.ingestion.domain.model.Coordinates;
-import com.simon.fleet.ingestion.domain.model.VehicleId;
+import com.simon.fleet.ingestion.domain.model.VehiclePlate;
 
 /**
  * Centraliza el esquema de nombres de claves de Redis que usa ingestion-service, para que la
@@ -16,13 +16,13 @@ final class RedisKeys {
     private RedisKeys() {
     }
 
-    static String lastPosition(VehicleId vehicleId) {
-        return LAST_POSITION_PREFIX + vehicleId.value();
+    static String lastPosition(VehiclePlate plate) {
+        return LAST_POSITION_PREFIX + plate.value();
     }
 
     /** Patrón para borrar, con KEYS/SCAN, todas las claves de dedupe de un vehículo. */
-    static String dedupePattern(VehicleId vehicleId) {
-        return DEDUPE_PREFIX + vehicleId.value() + ":*";
+    static String dedupePattern(VehiclePlate plate) {
+        return DEDUPE_PREFIX + plate.value() + ":*";
     }
 
     /**
@@ -31,7 +31,7 @@ final class RedisKeys {
      *                      mismo bucket producen la misma clave, y por lo tanto colisionan en
      *                      el SETNX de deduplicación.
      */
-    static String dedupe(VehicleId vehicleId, Coordinates coordinates, long windowBucket) {
-        return DEDUPE_PREFIX + vehicleId.value() + ":" + coordinates.lat() + ":" + coordinates.lng() + ":" + windowBucket;
+    static String dedupe(VehiclePlate plate, Coordinates coordinates, long windowBucket) {
+        return DEDUPE_PREFIX + plate.value() + ":" + coordinates.lat() + ":" + coordinates.lng() + ":" + windowBucket;
     }
 }

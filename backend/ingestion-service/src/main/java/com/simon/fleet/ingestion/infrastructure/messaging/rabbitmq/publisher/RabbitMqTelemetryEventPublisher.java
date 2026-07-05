@@ -3,7 +3,7 @@ package com.simon.fleet.ingestion.infrastructure.messaging.rabbitmq.publisher;
 import com.simon.fleet.contracts.lifecycle.VehicleCacheClearedEvent;
 import com.simon.fleet.contracts.telemetry.TelemetryReceivedEvent;
 import com.simon.fleet.ingestion.domain.model.TelemetryPoint;
-import com.simon.fleet.ingestion.domain.model.VehicleId;
+import com.simon.fleet.ingestion.domain.model.VehiclePlate;
 import com.simon.fleet.ingestion.domain.port.out.TelemetryEventPublisherPort;
 import com.simon.fleet.ingestion.infrastructure.messaging.rabbitmq.config.RabbitMqConfig;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class RabbitMqTelemetryEventPublisher implements TelemetryEventPublisherP
     public void publishReceived(TelemetryPoint point) {
         TelemetryReceivedEvent event = new TelemetryReceivedEvent(
                 UUID.randomUUID().toString(),
-                point.vehicleId().value(),
+                point.plate().value(),
                 point.coordinates().lat(),
                 point.coordinates().lng(),
                 point.recordedAt()
@@ -33,8 +33,8 @@ public class RabbitMqTelemetryEventPublisher implements TelemetryEventPublisherP
     }
 
     @Override
-    public void publishCacheCleared(VehicleId vehicleId) {
-        VehicleCacheClearedEvent event = new VehicleCacheClearedEvent(vehicleId.value(), Instant.now());
+    public void publishCacheCleared(VehiclePlate plate) {
+        VehicleCacheClearedEvent event = new VehicleCacheClearedEvent(plate.value(), Instant.now());
         rabbitTemplate.convertAndSend(
                 RabbitMqConfig.VEHICLE_LIFECYCLE_EXCHANGE, RabbitMqConfig.VEHICLE_CACHE_CLEARED_KEY, event);
     }

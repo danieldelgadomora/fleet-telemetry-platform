@@ -8,5 +8,5 @@ import java.time.Instant;
  * infraestructura (el consumer) para que el dominio nunca dependa directamente del formato de
  * mensajería de otro servicio.
  */
-public record VehicleReading(VehicleId vehicleId, Coordinates coordinates, Instant recordedAt) {
+public record VehicleReading(VehiclePlate plate, Coordinates coordinates, Instant recordedAt) {
 }

@@ -1,6 +1,6 @@
 package com.simon.fleet.gateway.domain.port.in;
 
-import com.simon.fleet.gateway.domain.model.VehicleId;
+import com.simon.fleet.gateway.domain.model.VehiclePlate;
 
 import java.time.Instant;
 
@@ -13,5 +13,5 @@ import java.time.Instant;
 public interface HandleTelemetryReceivedUseCase {
 
     /** Idempotente frente a reintentos: aplicar la misma lectura dos veces no cambia el resultado. */
-    void onTelemetryReceived(VehicleId vehicleId, double lat, double lng, Instant recordedAt);
+    void onTelemetryReceived(VehiclePlate plate, double lat, double lng, Instant recordedAt);
 }

@@ -1,7 +1,7 @@
 package com.simon.fleet.ingestion.infrastructure.persistence.mongo.adapter;
 
 import com.simon.fleet.ingestion.domain.model.TelemetryPoint;
-import com.simon.fleet.ingestion.domain.model.VehicleId;
+import com.simon.fleet.ingestion.domain.model.VehiclePlate;
 import com.simon.fleet.ingestion.domain.port.out.TelemetryHistoryRepositoryPort;
 import com.simon.fleet.ingestion.infrastructure.persistence.mongo.entity.TelemetryDocument;
 import com.simon.fleet.ingestion.infrastructure.persistence.mongo.repository.TelemetryMongoRepository;
@@ -40,12 +40,12 @@ public class MongoTelemetryHistoryRepository implements TelemetryHistoryReposito
      */
     @SuppressWarnings("unused")
     private void saveFallback(TelemetryPoint point, Throwable throwable) {
-        log.error("No se pudo persistir telemetría en Mongo para vehicleId={}", point.vehicleId(), throwable);
+        log.error("No se pudo persistir telemetría en Mongo para plate={}", point.plate(), throwable);
         throw new MongoUnavailableException("MongoDB no disponible", throwable);
     }
 
     @Override
-    public void purgeByVehicle(VehicleId vehicleId) {
-        mongoRepository.deleteByVehicleId(vehicleId.value());
+    public void purgeByVehicle(VehiclePlate plate) {
+        mongoRepository.deleteByPlate(plate.value());
     }
 }

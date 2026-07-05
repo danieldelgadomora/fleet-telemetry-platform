@@ -1,6 +1,6 @@
 package com.simon.fleet.alerting.application;
 
-import com.simon.fleet.alerting.domain.model.VehicleId;
+import com.simon.fleet.alerting.domain.model.VehiclePlate;
 import com.simon.fleet.alerting.domain.port.in.PurgeVehicleAlertsUseCase;
 import com.simon.fleet.alerting.domain.port.out.AlertEventPublisherPort;
 import com.simon.fleet.alerting.domain.port.out.AlertRepositoryPort;
@@ -17,9 +17,9 @@ public class PurgeVehicleAlertsService implements PurgeVehicleAlertsUseCase {
     private final AlertEventPublisherPort eventPublisherPort;
 
     @Override
-    public void purge(VehicleId vehicleId) {
-        alertRepositoryPort.purgeByVehicle(vehicleId);
-        trackingStatePort.clear(vehicleId);
-        eventPublisherPort.publishDataPurged(vehicleId);
+    public void purge(VehiclePlate plate) {
+        alertRepositoryPort.purgeByVehicle(plate);
+        trackingStatePort.clear(plate);
+        eventPublisherPort.publishDataPurged(plate);
     }
 }

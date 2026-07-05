@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 
 public record VehicleResponseDto(
-        @JsonProperty("vehicle_id") String vehicleId,
+        @JsonProperty("plate") String plate,
         String status,
         @JsonProperty("registered_at") Instant registeredAt,
         @JsonProperty("cache_cleared_at") Instant cacheClearedAt,

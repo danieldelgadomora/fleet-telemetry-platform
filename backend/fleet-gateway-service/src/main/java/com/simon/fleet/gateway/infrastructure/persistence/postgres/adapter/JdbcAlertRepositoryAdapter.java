@@ -1,7 +1,7 @@
 package com.simon.fleet.gateway.infrastructure.persistence.postgres.adapter;
 
 import com.simon.fleet.gateway.domain.model.Alert;
-import com.simon.fleet.gateway.domain.model.VehicleId;
+import com.simon.fleet.gateway.domain.model.VehiclePlate;
 import com.simon.fleet.gateway.domain.port.out.AlertRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -24,7 +24,7 @@ import java.util.List;
 public class JdbcAlertRepositoryAdapter implements AlertRepositoryPort {
 
     private static final String FIND_RECENT_SQL =
-            "SELECT id, vehicle_id, rule_code, message, raised_at FROM alerts ORDER BY raised_at DESC LIMIT ?";
+            "SELECT id, plate, rule_code, message, raised_at FROM alerts ORDER BY raised_at DESC LIMIT ?";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -32,7 +32,7 @@ public class JdbcAlertRepositoryAdapter implements AlertRepositoryPort {
     public List<Alert> findRecent(int limit) {
         return jdbcTemplate.query(FIND_RECENT_SQL, (rs, rowNum) -> new Alert(
                 rs.getString("id"),
-                new VehicleId(rs.getString("vehicle_id")),
+                new VehiclePlate(rs.getString("plate")),
                 rs.getString("rule_code"),
                 rs.getString("message"),
                 // La columna es `timestamp without time zone` pero guarda hora UTC (así la

@@ -5,8 +5,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Resultado de procesar una lectura GPS")
 public record TelemetryResponseDto(
-        @Schema(example = "v1")
-        @JsonProperty("vehicle_id") String vehicleId,
+        @Schema(example = "ABC123")
+        @JsonProperty("plate") String plate,
 
         @Schema(description = "ACCEPTED o DUPLICATE_IGNORED", example = "ACCEPTED")
         String status,

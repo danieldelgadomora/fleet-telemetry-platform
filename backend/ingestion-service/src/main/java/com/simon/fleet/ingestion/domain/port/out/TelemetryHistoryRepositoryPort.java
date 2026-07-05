@@ -1,7 +1,7 @@
 package com.simon.fleet.ingestion.domain.port.out;
 
 import com.simon.fleet.ingestion.domain.model.TelemetryPoint;
-import com.simon.fleet.ingestion.domain.model.VehicleId;
+import com.simon.fleet.ingestion.domain.model.VehiclePlate;
 
 /**
  * Puerto de salida (driven) hacia el histórico persistente de telemetría (MongoDB). Solo lo
@@ -22,5 +22,5 @@ public interface TelemetryHistoryRepositoryPort {
      * Participante de la Saga de borrado: elimina del histórico todas las lecturas de un
      * vehículo. Debe ser idempotente.
      */
-    void purgeByVehicle(VehicleId vehicleId);
+    void purgeByVehicle(VehiclePlate plate);
 }

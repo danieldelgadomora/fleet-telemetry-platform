@@ -10,7 +10,7 @@ import java.time.Instant;
  *
  * @param eventId    identificador único del evento, útil para que los consumidores puedan
  *                   detectar reentregas (idempotencia) sin depender solo del contenido.
- * @param vehicleId  identificador del vehículo que reportó la coordenada.
+ * @param plate      placa del vehículo que reportó la coordenada.
  * @param lat        latitud en grados decimales.
  * @param lng        longitud en grados decimales.
  * @param recordedAt momento en que el vehículo generó la lectura (no el momento en que se
@@ -18,7 +18,7 @@ import java.time.Instant;
  */
 public record TelemetryReceivedEvent(
         String eventId,
-        String vehicleId,
+        String plate,
         double lat,
         double lng,
         Instant recordedAt

@@ -1,7 +1,7 @@
 package com.simon.fleet.gateway.domain.port.out;
 
 import com.simon.fleet.gateway.domain.model.Vehicle;
-import com.simon.fleet.gateway.domain.model.VehicleId;
+import com.simon.fleet.gateway.domain.model.VehiclePlate;
 
 import java.time.Instant;
 import java.util.List;
@@ -17,14 +17,14 @@ import java.util.Optional;
  */
 public interface VehicleRepositoryPort {
 
-    Optional<Vehicle> findById(VehicleId id);
+    Optional<Vehicle> findById(VehiclePlate id);
 
     /** Usado solo para el registro inicial y para pedir el borrado (un único escritor cada vez). */
     void save(Vehicle vehicle);
 
-    void markCacheCleared(VehicleId id, Instant when);
+    void markCacheCleared(VehiclePlate id, Instant when);
 
-    void markDataPurged(VehicleId id, Instant when);
+    void markDataPurged(VehiclePlate id, Instant when);
 
     /**
      * Transición atómica a {@code DELETED}, condicionada en SQL a que el vehículo esté
@@ -34,7 +34,7 @@ public interface VehicleRepositoryPort {
      *
      * @return true si esta llamada fue la que efectivamente marcó el vehículo como DELETED.
      */
-    boolean completeIfBothConfirmed(VehicleId id);
+    boolean completeIfBothConfirmed(VehiclePlate id);
 
     /**
      * Registra el vehículo si todavía no existe (idempotente, vía upsert atómico). Lo usan los
@@ -42,7 +42,7 @@ public interface VehicleRepositoryPort {
      * {@code POST /api/v1/vehicles}: el dashboard debe reflejar cualquier vehículo que esté
      * reportando, no solo los registrados explícitamente.
      */
-    void registerIfAbsent(VehicleId id, Instant registeredAt);
+    void registerIfAbsent(VehiclePlate id, Instant registeredAt);
 
     /**
      * Actualiza la última posición conocida y deriva el {@code movement_status} (EN_MOVIMIENTO
@@ -53,7 +53,7 @@ public interface VehicleRepositoryPort {
      *
      * @return true si el vehículo existía y se actualizó.
      */
-    boolean updatePosition(VehicleId id, double lat, double lng, Instant when);
+    boolean updatePosition(VehiclePlate id, double lat, double lng, Instant when);
 
     /**
      * Marca el vehículo en {@code ALERTA}. Se queda así hasta que {@link #updatePosition}
@@ -61,7 +61,7 @@ public interface VehicleRepositoryPort {
      *
      * @return true si el vehículo existía y se actualizó.
      */
-    boolean markInAlert(VehicleId id);
+    boolean markInAlert(VehiclePlate id);
 
     /** Vehículos {@code ACTIVE}, para el listado del dashboard. */
     List<Vehicle> findAllActive();
