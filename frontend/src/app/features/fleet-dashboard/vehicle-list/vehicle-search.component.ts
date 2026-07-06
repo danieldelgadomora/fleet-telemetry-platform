@@ -50,4 +50,9 @@ export class VehicleSearchComponent {
   abrirRegistro(): void {
     this.dialog.open(RegisterVehicleFormComponent, { width: '360px' });
   }
+
+  /** Limpia la selección para volver a la vista general: todas las alertas, mapa sin foco. */
+  volverAVistaGeneral(): void {
+    this.fleetStore.selectVehicle(null);
+  }
 }

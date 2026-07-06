@@ -46,10 +46,16 @@ body {
   color: var(--mat-sys-on-surface);
 }
 
-// Panel de éxito explícito para los toasts (MatSnackBar): los errores ya no pasan por aquí
-// (van a ErrorDialogComponent), así que este verde nunca se confunde con un error.
+// Paneles explícitos para los toasts (MatSnackBar): éxito en verde, error en rojo — mismo
+// componente (MatSnackBar) para ambos, solo cambia el panelClass, nunca se confunden porque
+// además el texto describe la acción.
 .snackbar-success {
   --mdc-snackbar-container-color: var(--color-status-moving);
+  --mdc-snackbar-supporting-text-color: #ffffff;
+}
+
+.snackbar-error {
+  --mdc-snackbar-container-color: var(--color-status-alert);
   --mdc-snackbar-supporting-text-color: #ffffff;
 }
 

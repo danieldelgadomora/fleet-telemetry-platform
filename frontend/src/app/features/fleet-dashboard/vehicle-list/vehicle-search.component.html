@@ -24,6 +24,10 @@
   </div>
 
   @if (selectedVehicle(); as vehicle) {
+    <button mat-stroked-button class="vehicle-search__back-button" (click)="volverAVistaGeneral()">
+      <mat-icon>arrow_back</mat-icon>
+      Vista general
+    </button>
     <app-vehicle-detail [vehicle]="vehicle" />
   } @else {
     <p class="vehicle-search__hint">Selecciona un vehículo de la lista para ver su información.</p>
