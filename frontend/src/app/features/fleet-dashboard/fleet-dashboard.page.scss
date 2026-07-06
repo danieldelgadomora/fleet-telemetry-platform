@@ -27,6 +27,10 @@
 .fleet-dashboard__vehicles,
 .fleet-dashboard__alerts {
   min-height: 0;
+  // Recorte estricto a la altura real de su fila del grid: sin esto, cada sección puede
+  // terminar dimensionándose por su propio contenido (más alto que su mitad asignada) en vez
+  // de respetar el split del grid — ambas ya scrollean internamente si su contenido no cabe.
+  overflow: hidden;
 }
 
 // En pantallas angostas (tablet/móvil) el mapa y el sidebar no caben lado a lado: se apilan,
@@ -34,10 +38,16 @@
 @media (max-width: 900px) {
   .fleet-dashboard__body {
     grid-template-columns: 1fr;
-    grid-template-rows: minmax(220px, 40vh) 1fr;
+    grid-template-rows: minmax(200px, 32vh) 1fr;
   }
 
   .fleet-dashboard__sidebar {
+    // 50/50 real entre vehículos y alertas: ambas filas son 1fr (mismo peso), con un piso para
+    // que ninguna desaparezca en viewports muy cortos. Antes la fila de alertas usaba `auto`
+    // como techo, que la hacía crecer según su contenido (más alertas = más alto) y le robaba
+    // espacio a la tabla de vehículos; ambos paneles ya scrollean internamente, así que no
+    // hace falta que ninguna fila crezca más allá de su mitad.
+    grid-template-rows: minmax(150px, 1fr) minmax(150px, 1fr);
     border-left: none;
     border-top: 1px solid var(--mat-sys-outline-variant);
   }

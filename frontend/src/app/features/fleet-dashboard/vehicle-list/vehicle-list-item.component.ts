@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiError } from '../../../core/http/api-error.model';
 import { Vehicle } from '../../../core/models/vehicle.model';
 import { FleetStoreService } from '../../../core/store/fleet-store.service';
@@ -10,7 +11,6 @@ import { presentMovementStatus } from '../../../shared/strategies/movement-statu
 import { StatusPresentation } from '../../../shared/strategies/status-presentation.model';
 import { presentVehicleStatus } from '../../../shared/strategies/vehicle-status.presentation';
 import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confirm-dialog.component';
-import { ErrorDialogService } from '../../../shared/ui/error-dialog/error-dialog.service';
 import { StatusBadgeComponent } from '../../../shared/ui/status-badge/status-badge.component';
 
 /** Fila de la lista de vehículos: estado, última posición reportada y acción de borrado. */
@@ -27,7 +27,7 @@ export class VehicleListItemComponent {
 
   private readonly fleetStore = inject(FleetStoreService);
   private readonly dialog = inject(MatDialog);
-  private readonly errorDialog = inject(ErrorDialogService);
+  private readonly snackBar = inject(MatSnackBar);
 
   /**
    * Mientras el vehículo está `ACTIVE`, lo relevante para el operador es su estado de
@@ -68,7 +68,8 @@ export class VehicleListItemComponent {
         return;
       }
       this.fleetStore.removeVehicle(this.vehicle.plate).subscribe({
-        error: (error: ApiError) => this.errorDialog.show(error.message),
+        error: (error: ApiError) =>
+          this.snackBar.open(error.message, 'Cerrar', { duration: 4000, panelClass: 'snackbar-error' }),
       });
     });
   }

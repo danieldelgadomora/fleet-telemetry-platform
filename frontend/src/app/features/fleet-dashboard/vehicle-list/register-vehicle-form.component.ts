@@ -8,13 +8,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiError } from '../../../core/http/api-error.model';
 import { FleetStoreService } from '../../../core/store/fleet-store.service';
-import { ErrorDialogService } from '../../../shared/ui/error-dialog/error-dialog.service';
 
 /**
  * Contenido de diálogo para el alta de un vehículo nuevo: es la única forma de registrar, para
  * que la acción quede separada de la búsqueda/listado en vez de compartir espacio con ella. Si
- * el backend la rechaza (409, id ya existe), el error se muestra en un diálogo aparte, nunca en
- * el mismo toast verde que usa el éxito.
+ * el backend la rechaza (409, id ya existe), el error se muestra con el mismo toast que el
+ * éxito, solo que en rojo (`snackbar-error`), para que ambos casos se sientan consistentes.
  */
 @Component({
   selector: 'app-register-vehicle-form',
@@ -28,7 +27,6 @@ export class RegisterVehicleFormComponent {
   private readonly fleetStore = inject(FleetStoreService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly snackBar = inject(MatSnackBar);
-  private readonly errorDialog = inject(ErrorDialogService);
   private readonly dialogRef = inject(MatDialogRef<RegisterVehicleFormComponent>);
 
   readonly form = this.formBuilder.nonNullable.group({
@@ -50,7 +48,8 @@ export class RegisterVehicleFormComponent {
         });
         this.dialogRef.close();
       },
-      error: (error: ApiError) => this.errorDialog.show(error.message),
+      error: (error: ApiError) =>
+        this.snackBar.open(error.message, 'Cerrar', { duration: 4000, panelClass: 'snackbar-error' }),
     });
   }
 
