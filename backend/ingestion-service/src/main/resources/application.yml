@@ -1,6 +1,12 @@
 server:
   port: 8081
 
+app:
+  cors:
+    # Origen del dashboard Angular en desarrollo (ng serve). Ajustar en despliegue si el
+    # dashboard se sirve desde otro host/puerto.
+    allowed-origin: http://localhost:4200
+
 spring:
   application:
     name: ingestion-service

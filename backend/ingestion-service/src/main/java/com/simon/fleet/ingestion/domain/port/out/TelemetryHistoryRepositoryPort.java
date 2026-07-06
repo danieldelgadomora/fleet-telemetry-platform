@@ -3,11 +3,15 @@ package com.simon.fleet.ingestion.domain.port.out;
 import com.simon.fleet.ingestion.domain.model.TelemetryPoint;
 import com.simon.fleet.ingestion.domain.model.VehiclePlate;
 
+import java.util.List;
+
 /**
- * Puerto de salida (driven) hacia el histórico persistente de telemetría (MongoDB). Solo lo
- * invoca el consumer de RabbitMQ que procesa {@code TelemetryReceivedEvent}, nunca el
- * controlador HTTP directamente: la escritura en Mongo está protegida con Circuit Breaker y no
- * debe bloquear la respuesta al cliente que envió la coordenada.
+ * Puerto de salida (driven) hacia el histórico persistente de telemetría (MongoDB). La
+ * escritura ({@code save}) solo la invoca el consumer de RabbitMQ que procesa
+ * {@code TelemetryReceivedEvent}, nunca el controlador HTTP directamente: está protegida con
+ * Circuit Breaker y no debe bloquear la respuesta al cliente que envió la coordenada. La
+ * lectura ({@code findRecent}) sí la invoca el controlador HTTP directamente, bajo demanda del
+ * dashboard: no hay ninguna razón para pasarla por RabbitMQ.
  */
 public interface TelemetryHistoryRepositoryPort {
 
@@ -23,4 +27,12 @@ public interface TelemetryHistoryRepositoryPort {
      * vehículo. Debe ser idempotente.
      */
     void purgeByVehicle(VehiclePlate plate);
+
+    /**
+     * Las {@code limit} lecturas más recientes de un vehículo, en orden descendente de
+     * {@code recordedAt} (la más reciente primero). Lista vacía si la placa nunca reportó
+     * telemetría — este puerto no valida la existencia del vehículo, esa identidad no le
+     * pertenece a ingestion-service.
+     */
+    List<TelemetryPoint> findRecent(VehiclePlate plate, int limit);
 }
