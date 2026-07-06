@@ -8,12 +8,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/** Alimenta el listado principal del dashboard: los vehículos activos y su último estado conocido. */
 @Service
 @RequiredArgsConstructor
 public class ListActiveVehiclesService implements ListActiveVehiclesUseCase {
 
     private final VehicleRepositoryPort repositoryPort;
 
+    /** Devuelve todos los vehículos {@code ACTIVE}. */
     @Override
     public List<Vehicle> listActive() {
         return repositoryPort.findAllActive();

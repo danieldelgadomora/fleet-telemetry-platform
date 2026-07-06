@@ -14,11 +14,13 @@ public class ValidCoordinatesSpecification implements TelemetrySpecification {
 
     private static final Coordinates NULL_ISLAND = new Coordinates(0.0, 0.0);
 
+    /** Rechaza la lectura si su coordenada es "Null Island" (0.0, 0.0). */
     @Override
     public boolean isSatisfiedBy(TelemetryPoint point) {
         return !point.coordinates().isSameLocationAs(NULL_ISLAND);
     }
 
+    /** Mensaje explicando por qué (0.0, 0.0) se rechaza. */
     @Override
     public String violationMessage() {
         return "Coordenadas (0.0, 0.0) no son válidas: indican que el GPS no obtuvo una posición real";

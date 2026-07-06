@@ -9,5 +9,6 @@ import com.simon.fleet.gateway.domain.model.VehiclePlate;
  */
 public interface VehicleLifecycleEventPublisherPort {
 
+    /** Publica la solicitud de borrado para que ingestion-service y alerting-service limpien sus datos del vehículo. */
     void publishDeletionRequested(VehiclePlate plate);
 }

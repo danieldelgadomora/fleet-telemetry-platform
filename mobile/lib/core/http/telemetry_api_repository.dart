@@ -8,6 +8,7 @@ import '../models/telemetry_reading.dart';
 
 /// Envía telemetría y activaciones del botón de pánico a `ingestion-service`.
 class TelemetryApiRepository {
+  /// Envía una lectura GPS a `POST /api/v1/telemetry`.
   Future<void> postTelemetry(TelemetryReading reading) async {
     await http.post(
       Uri.parse('${AppConfig.ingestionBaseUrl}/api/v1/telemetry'),
@@ -16,6 +17,7 @@ class TelemetryApiRepository {
     );
   }
 
+  /// Activa el botón de pánico contra `POST /api/v1/panic`; lanza si la respuesta no es 202.
   Future<void> postPanic(PanicRequest request) async {
     final response = await http.post(
       Uri.parse('${AppConfig.ingestionBaseUrl}/api/v1/panic'),

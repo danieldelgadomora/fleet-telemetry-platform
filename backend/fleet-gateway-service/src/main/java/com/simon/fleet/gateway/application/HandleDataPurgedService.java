@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
+/**
+ * Consume la confirmación de purga de alertas que publica alerting-service, la otra de las dos
+ * confirmaciones que necesita la Saga de eliminación para completarse.
+ */
 @Service
 @RequiredArgsConstructor
 public class HandleDataPurgedService implements HandleDataPurgedUseCase {
@@ -16,6 +20,7 @@ public class HandleDataPurgedService implements HandleDataPurgedUseCase {
     private final VehicleRepositoryPort repositoryPort;
     private final FleetStatusBroadcastPort fleetStatusBroadcastPort;
 
+    /** Registra la confirmación y, si con esta ya se cumplieron ambas, cierra la Saga (DELETED) y lo empuja al dashboard. */
     @Override
     public void onDataPurged(VehiclePlate plate, Instant purgedAt) {
         repositoryPort.markDataPurged(plate, purgedAt);

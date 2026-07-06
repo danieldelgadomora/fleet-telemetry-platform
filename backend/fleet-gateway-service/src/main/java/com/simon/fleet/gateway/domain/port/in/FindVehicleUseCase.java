@@ -11,5 +11,6 @@ import java.util.Optional;
  */
 public interface FindVehicleUseCase {
 
+    /** Busca el estado actual del vehículo por placa. */
     Optional<Vehicle> findById(VehiclePlate plate);
 }

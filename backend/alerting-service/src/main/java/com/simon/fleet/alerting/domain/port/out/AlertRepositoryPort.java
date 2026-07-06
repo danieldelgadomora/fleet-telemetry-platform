@@ -10,6 +10,7 @@ import com.simon.fleet.alerting.domain.model.VehiclePlate;
  */
 public interface AlertRepositoryPort {
 
+    /** Persiste una alerta nueva. */
     void save(Alert alert);
 
     /** Participante de la Saga de borrado: purga las alertas históricas del vehículo. */

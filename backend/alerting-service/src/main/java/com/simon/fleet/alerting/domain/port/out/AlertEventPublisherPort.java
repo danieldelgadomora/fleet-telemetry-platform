@@ -10,6 +10,7 @@ import com.simon.fleet.alerting.domain.model.VehiclePlate;
  */
 public interface AlertEventPublisherPort {
 
+    /** Publica el hecho de que se generó una alerta nueva. */
     void publishRaised(Alert alert);
 
     /** Confirma, dentro de la Saga de borrado, que ya se purgaron las alertas del vehículo. */

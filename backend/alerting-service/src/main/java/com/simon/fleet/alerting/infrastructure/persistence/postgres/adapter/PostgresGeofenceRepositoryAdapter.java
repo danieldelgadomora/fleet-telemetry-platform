@@ -6,16 +6,18 @@ import com.simon.fleet.alerting.domain.port.out.GeofenceRepositoryPort;
 import com.simon.fleet.alerting.infrastructure.persistence.postgres.entity.SafeZoneJpaEntity;
 import com.simon.fleet.alerting.infrastructure.persistence.postgres.repository.SafeZoneJpaRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Component
+/** Adaptador de {@link GeofenceRepositoryPort} sobre PostgreSQL, vía Spring Data JPA. */
+@Repository
 @RequiredArgsConstructor
 public class PostgresGeofenceRepositoryAdapter implements GeofenceRepositoryPort {
 
     private final SafeZoneJpaRepository jpaRepository;
 
+    /** Devuelve las zonas seguras activas ya traducidas a value objects de dominio. */
     @Override
     public List<SafeZone> findAllActive() {
         return jpaRepository.findByActiveTrue().stream().map(this::toDomain).toList();

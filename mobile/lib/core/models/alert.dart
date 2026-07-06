@@ -16,6 +16,7 @@ class Alert {
     required this.raisedAt,
   });
 
+  /// Reconstruye la alerta a partir del JSON snake_case que devuelve `GET /api/v1/alerts`.
   factory Alert.fromJson(Map<String, dynamic> json) => Alert(
         alertId: json['alert_id'] as String,
         plate: json['plate'] as String,

@@ -51,24 +51,32 @@ class TripStore extends ChangeNotifier {
   String? get lastError => _lastError;
   int get pendingCount => _pendingCount;
 
+  /// Carga la placa persistida (si hay una) y el número de lecturas pendientes de la cola,
+  /// para que la pantalla inicial sepa si debe saltar directo al viaje o pedir el onboarding.
   Future<void> loadPlate() async {
     _plate = await _driverPrefsRepository.getPlate();
     _pendingCount = await _telemetryOutboxRepository.count();
     notifyListeners();
   }
 
+  /// Persiste la placa ingresada por el conductor y la deja disponible para el resto de la app.
   Future<void> setPlate(String plate) async {
     await _driverPrefsRepository.savePlate(plate);
     _plate = plate.trim().toUpperCase();
     notifyListeners();
   }
 
+  /// Alterna el estado de "conexión simulada". Al pasar a "en línea" dispara un intento de
+  /// vaciar la cola de lecturas pendientes; al pasar a "sin señal", las siguientes lecturas se
+  /// encolan en vez de intentar enviarse.
   void toggleConnectionSimulated() {
     _connectionSimulatedOnline = !_connectionSimulatedOnline;
     notifyListeners();
     if (_connectionSimulatedOnline) _flushPendingQueue();
   }
 
+  /// Arranca el reporte periódico de posición del viaje activo; sin placa o con un viaje ya
+  /// activo, no hace nada.
   Future<void> startTrip() async {
     if (_tripActive || _plate == null) return;
     _lastError = null;
@@ -77,6 +85,7 @@ class TripStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Detiene el reporte periódico de posición: sin viaje activo no se envía telemetría.
   void endTrip() {
     if (!_tripActive) return;
     _locationTracker.stop();
@@ -147,6 +156,8 @@ class TripStore extends ChangeNotifier {
     }
   }
 
+  /// Activa el botón de pánico con la última posición conocida (o sin ella, si aún no hay
+  /// ninguna) y una nota opcional del conductor.
   Future<void> triggerPanic({String? message}) async {
     final plate = _plate;
     if (plate == null) return;
@@ -165,6 +176,7 @@ class TripStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Recarga el historial de alertas de toda la flota y lo filtra a las de la placa actual.
   Future<void> refreshAlerts() async {
     final plate = _plate;
     if (plate == null) return;

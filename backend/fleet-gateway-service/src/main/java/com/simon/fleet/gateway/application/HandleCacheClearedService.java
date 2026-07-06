@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
+/**
+ * Consume la confirmación de limpieza de caché/Mongo que publica ingestion-service, una de las
+ * dos confirmaciones que necesita la Saga de eliminación para completarse.
+ */
 @Service
 @RequiredArgsConstructor
 public class HandleCacheClearedService implements HandleCacheClearedUseCase {
@@ -16,6 +20,7 @@ public class HandleCacheClearedService implements HandleCacheClearedUseCase {
     private final VehicleRepositoryPort repositoryPort;
     private final FleetStatusBroadcastPort fleetStatusBroadcastPort;
 
+    /** Registra la confirmación y, si con esta ya se cumplieron ambas, cierra la Saga (DELETED) y lo empuja al dashboard. */
     @Override
     public void onCacheCleared(VehiclePlate plate, Instant clearedAt) {
         repositoryPort.markCacheCleared(plate, clearedAt);

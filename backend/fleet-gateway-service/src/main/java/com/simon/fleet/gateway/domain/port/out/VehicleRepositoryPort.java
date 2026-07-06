@@ -17,13 +17,16 @@ import java.util.Optional;
  */
 public interface VehicleRepositoryPort {
 
+    /** Busca el vehículo por placa, con su estado y última posición conocida completos. */
     Optional<Vehicle> findById(VehiclePlate id);
 
     /** Usado solo para el registro inicial y para pedir el borrado (un único escritor cada vez). */
     void save(Vehicle vehicle);
 
+    /** Registra la confirmación de ingestion-service de que ya limpió su caché/histórico del vehículo. */
     void markCacheCleared(VehiclePlate id, Instant when);
 
+    /** Registra la confirmación de alerting-service de que ya purgó su histórico de alertas del vehículo. */
     void markDataPurged(VehiclePlate id, Instant when);
 
     /**

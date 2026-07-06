@@ -9,5 +9,6 @@ import com.simon.fleet.ingestion.domain.model.PanicButtonPress;
  */
 public interface PanicEventPublisherPort {
 
+    /** Publica la activación del botón de pánico en {@code fleet.panic}. */
     void publishTriggered(PanicButtonPress press);
 }

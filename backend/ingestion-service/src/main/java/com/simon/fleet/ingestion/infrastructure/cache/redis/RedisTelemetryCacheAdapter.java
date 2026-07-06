@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -20,7 +20,7 @@ import java.util.Optional;
  * serializado como JSON bajo una clave con TTL corto: si el vehículo deja de reportar, su
  * última posición simplemente expira sola.
  */
-@Component
+@Repository
 @RequiredArgsConstructor
 @Slf4j
 public class RedisTelemetryCacheAdapter implements TelemetryCachePort {
@@ -31,6 +31,7 @@ public class RedisTelemetryCacheAdapter implements TelemetryCachePort {
     @Value("${ingestion.cache.last-position-ttl-seconds:300}")
     private long lastPositionTtlSeconds;
 
+    /** Lee y deserializa la última posición cacheada de la placa, vacío si no hay nada o falla la deserialización. */
     @Override
     public Optional<TelemetryPoint> findLastKnownPosition(VehiclePlate plate) {
         String json = redisTemplate.opsForValue().get(RedisKeys.lastPosition(plate));
@@ -45,6 +46,7 @@ public class RedisTelemetryCacheAdapter implements TelemetryCachePort {
         }
     }
 
+    /** Serializa y cachea la lectura como última posición conocida de su placa, con TTL corto. */
     @Override
     public void saveLastKnownPosition(TelemetryPoint point) {
         try {
@@ -56,6 +58,7 @@ public class RedisTelemetryCacheAdapter implements TelemetryCachePort {
         }
     }
 
+    /** Borra la última posición cacheada y las claves de dedupe de la placa (participante de la Saga de eliminación). */
     @Override
     public void clearVehicleCache(VehiclePlate plate) {
         redisTemplate.delete(RedisKeys.lastPosition(plate));

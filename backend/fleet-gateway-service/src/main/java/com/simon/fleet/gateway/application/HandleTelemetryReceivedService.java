@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
+/**
+ * Mantiene al día la vista de lectura del dashboard consumiendo el evento de telemetría que ya
+ * publica ingestion-service, sin tocar sus bases de datos ni su código.
+ */
 @Service
 @RequiredArgsConstructor
 public class HandleTelemetryReceivedService implements HandleTelemetryReceivedUseCase {
@@ -16,6 +20,10 @@ public class HandleTelemetryReceivedService implements HandleTelemetryReceivedUs
     private final VehicleRepositoryPort repositoryPort;
     private final FleetStatusBroadcastPort fleetStatusBroadcastPort;
 
+    /**
+     * Actualiza la última posición conocida; si la placa nunca se registró o estaba
+     * {@code DELETED}, la da de alta/reactiva primero. Empuja el estado resultante al dashboard.
+     */
     @Override
     public void onTelemetryReceived(VehiclePlate plate, double lat, double lng, Instant recordedAt) {
         boolean updated = repositoryPort.updatePosition(plate, lat, lng, recordedAt);

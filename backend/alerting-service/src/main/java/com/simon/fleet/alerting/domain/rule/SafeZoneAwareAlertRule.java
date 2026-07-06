@@ -24,11 +24,18 @@ public class SafeZoneAwareAlertRule implements AlertRule {
         this.geofenceRepositoryPort = geofenceRepositoryPort;
     }
 
+    /** Mismo código que la regla decorada: para el resto del sistema, sigue siendo la misma regla. */
     @Override
     public String ruleCode() {
         return delegate.ruleCode();
     }
 
+    /**
+     * Delega la evaluación completa a la regla decorada (short-circuit: si no generó alerta, ni
+     * siquiera consulta las zonas seguras). Si sí generó una alerta y la coordenada cae dentro
+     * de una zona segura activa, la descarta — pero siempre conserva intacto el estado de
+     * tracking que calculó el delegado, para no corromper el conteo de tiempo detenido.
+     */
     @Override
     public AlertEvaluationResult evaluate(VehicleReading reading, Optional<VehicleTrackingState> currentState) {
         AlertEvaluationResult result = delegate.evaluate(reading, currentState);

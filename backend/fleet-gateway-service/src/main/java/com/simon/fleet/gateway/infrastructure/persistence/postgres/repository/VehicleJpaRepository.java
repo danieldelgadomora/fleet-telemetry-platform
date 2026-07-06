@@ -9,12 +9,20 @@ import org.springframework.data.repository.query.Param;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * Repositorio Spring Data JPA de la tabla {@code vehicles}. Spring Data genera la
+ * implementación automáticamente por extender {@link JpaRepository}; no necesita
+ * {@code @Repository} explícita (ver {@code PostgresVehicleRepositoryAdapter}, que sí la lleva
+ * por ser la clase que este proyecto escribe a mano).
+ */
 public interface VehicleJpaRepository extends JpaRepository<VehicleJpaEntity, String> {
 
+    /** Registra la confirmación de ingestion-service de que ya limpió su caché/histórico del vehículo. */
     @Modifying
     @Query("UPDATE VehicleJpaEntity v SET v.cacheClearedAt = :when WHERE v.plate = :plate")
     void markCacheCleared(@Param("plate") String plate, @Param("when") Instant when);
 
+    /** Registra la confirmación de alerting-service de que ya purgó su histórico de alertas del vehículo. */
     @Modifying
     @Query("UPDATE VehicleJpaEntity v SET v.dataPurgedAt = :when WHERE v.plate = :plate")
     void markDataPurged(@Param("plate") String plate, @Param("when") Instant when);
@@ -84,5 +92,6 @@ public interface VehicleJpaRepository extends JpaRepository<VehicleJpaEntity, St
     @Query("UPDATE VehicleJpaEntity v SET v.movementStatus = 'ALERTA' WHERE v.plate = :plate AND v.status != 'DELETED'")
     int markInAlert(@Param("plate") String plate);
 
+    /** Vehículos que están en el estado dado (usado con {@code "ACTIVE"} para el listado del dashboard). */
     List<VehicleJpaEntity> findAllByStatus(String status);
 }

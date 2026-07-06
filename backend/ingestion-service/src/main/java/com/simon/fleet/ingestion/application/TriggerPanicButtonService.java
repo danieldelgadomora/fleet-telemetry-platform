@@ -18,6 +18,7 @@ public class TriggerPanicButtonService implements TriggerPanicButtonUseCase {
 
     private final PanicEventPublisherPort eventPublisherPort;
 
+    /** Publica la activación del botón de pánico para que alerting-service genere la alerta. */
     @Override
     public void trigger(PanicButtonPress press) {
         eventPublisherPort.publishTriggered(press);

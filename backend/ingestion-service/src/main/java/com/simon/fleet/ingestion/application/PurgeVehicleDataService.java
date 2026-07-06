@@ -8,6 +8,12 @@ import com.simon.fleet.ingestion.domain.port.out.TelemetryHistoryRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+/**
+ * Participante de la Saga de eliminación del lado de ingestion-service: al recibir la solicitud
+ * de borrado, limpia la caché Redis (última posición, claves de dedupe) y el histórico de
+ * telemetría en Mongo de la placa, y confirma la limpieza publicando el evento correspondiente
+ * para que fleet-gateway-service pueda completar la Saga.
+ */
 @Service
 @RequiredArgsConstructor
 public class PurgeVehicleDataService implements PurgeVehicleDataUseCase {
@@ -16,6 +22,7 @@ public class PurgeVehicleDataService implements PurgeVehicleDataUseCase {
     private final TelemetryHistoryRepositoryPort historyRepositoryPort;
     private final TelemetryEventPublisherPort eventPublisherPort;
 
+    /** Limpia la caché y el histórico de la placa, y confirma la limpieza. */
     @Override
     public void purgeVehicle(VehiclePlate plate) {
         cachePort.clearVehicleCache(plate);

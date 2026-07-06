@@ -9,5 +9,6 @@ import com.simon.fleet.alerting.domain.model.VehicleReading;
  */
 public interface EvaluateTelemetryUseCase {
 
+    /** Evalúa una lectura GPS contra todas las reglas de alerta registradas. */
     void evaluate(VehicleReading reading);
 }
