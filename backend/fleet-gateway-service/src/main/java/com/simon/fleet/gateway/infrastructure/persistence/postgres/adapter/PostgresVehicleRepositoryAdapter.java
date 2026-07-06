@@ -62,8 +62,8 @@ public class PostgresVehicleRepositoryAdapter implements VehicleRepositoryPort {
 
     @Override
     @Transactional
-    public void registerIfAbsent(VehiclePlate id, Instant registeredAt) {
-        jpaRepository.registerIfAbsent(id.value(), registeredAt);
+    public void registerOrReactivate(VehiclePlate id, Instant registeredAt) {
+        jpaRepository.registerOrReactivate(id.value(), registeredAt);
     }
 
     @Override

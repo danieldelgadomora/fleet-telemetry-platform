@@ -20,7 +20,9 @@ public class HandleVehicleAlertRaisedService implements HandleVehicleAlertRaised
     public void onAlertRaised(VehiclePlate plate, Instant raisedAt) {
         boolean updated = repositoryPort.markInAlert(plate);
         if (!updated) {
-            repositoryPort.registerIfAbsent(plate, raisedAt);
+            // La placa nunca se registró o estaba DELETED: se da de alta/reactiva
+            // automáticamente, y luego sí se marca la alerta.
+            repositoryPort.registerOrReactivate(plate, raisedAt);
             repositoryPort.markInAlert(plate);
         }
         repositoryPort.findById(plate).ifPresent(fleetStatusBroadcastPort::broadcastStatus);

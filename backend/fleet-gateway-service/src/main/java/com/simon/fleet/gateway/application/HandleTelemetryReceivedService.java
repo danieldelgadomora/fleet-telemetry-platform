@@ -20,9 +20,10 @@ public class HandleTelemetryReceivedService implements HandleTelemetryReceivedUs
     public void onTelemetryReceived(VehiclePlate plate, double lat, double lng, Instant recordedAt) {
         boolean updated = repositoryPort.updatePosition(plate, lat, lng, recordedAt);
         if (!updated) {
-            // Vehículo nunca registrado (nunca pasó por POST /api/v1/vehicles): se da de alta
-            // automáticamente, y luego sí se aplica la posición.
-            repositoryPort.registerIfAbsent(plate, recordedAt);
+            // La placa nunca se registró (nunca pasó por POST /api/v1/vehicles) o estaba
+            // DELETED: en ambos casos se da de alta/reactiva automáticamente, y luego sí se
+            // aplica la posición.
+            repositoryPort.registerOrReactivate(plate, recordedAt);
             repositoryPort.updatePosition(plate, lat, lng, recordedAt);
         }
         // El movement_status resultante lo deriva Postgres en el propio UPDATE (ver

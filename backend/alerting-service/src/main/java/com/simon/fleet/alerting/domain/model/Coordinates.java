@@ -26,11 +26,12 @@ public record Coordinates(double lat, double lng) {
         double deltaLat = Math.toRadians(other.lat - this.lat);
         double deltaLng = Math.toRadians(other.lng - this.lng);
 
-        double a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2)
+        double haversineOfCentralAngle = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2)
                 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double angularDistanceRadians = 2 * Math.atan2(
+                Math.sqrt(haversineOfCentralAngle), Math.sqrt(1 - haversineOfCentralAngle));
 
-        return EARTH_RADIUS_METERS * c;
+        return EARTH_RADIUS_METERS * angularDistanceRadians;
     }
 
     private static double round(double value) {
