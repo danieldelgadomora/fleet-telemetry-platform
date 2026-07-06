@@ -159,13 +159,13 @@ espíritu" se explican en
 
 ### Otros patrones (DDD / arquitectura distribuida)
 
-- **Hexagonal / Ports & Adapters** por servicio, dominio sin dependencias de Spring/JPA/AMQP/Redis, testeable con JUnit puro.
-- **Specification Pattern**, validación de payload GPS (coordenadas válidas, timestamp válido, no-duplicado), reglas composables y testeables por separado.
-- **Circuit Breaker + Retry (Resilience4j)**, protege la escritura a MongoDB (histórico de telemetría); si falla, el mensaje se reintenta/reencola sin tumbar la ingesta.
-- **Saga coreografiada**, eliminación de vehículo con consistencia eventual entre Redis, MongoDB y PostgreSQL (ver diagrama de secuencia arriba).
-- **Repository Pattern**, puertos de persistencia en el dominio, implementados por adaptadores JPA (Postgres) y del driver de MongoDB (telemetría), intercambiables sin tocar el dominio.
-- **Idempotent Consumer**, los consumers de RabbitMQ verifican su propio estado antes de actuar, para tolerar reintentos y entregas duplicadas (at-least-once delivery).
-- **CQRS "en espíritu"**, el camino de escritura (`ingestion-service`) está físicamente separado del modelo de lectura agregado (`fleet-gateway-service`), sin implementar un framework CQRS completo (event sourcing, múltiples read models), decisión consciente de alcance para este prototipo.
+- **Hexagonal / Ports & Adapters**: Por servicio, dominio sin dependencias de Spring/JPA/AMQP/Redis, testeable con JUnit puro.
+- **Specification Pattern**: Validación de payload GPS (coordenadas válidas, timestamp válido, no-duplicado), reglas composables y testeables por separado.
+- **Circuit Breaker + Retry (Resilience4j)**: Protege la escritura a MongoDB (histórico de telemetría); si falla, el mensaje se reintenta/reencola sin tumbar la ingesta.
+- **Saga coreografiada**: Eliminación de vehículo con consistencia eventual entre Redis, MongoDB y PostgreSQL (ver diagrama de secuencia arriba).
+- **Repository Pattern**: Puertos de persistencia en el dominio, implementados por adaptadores JPA (Postgres) y del driver de MongoDB (telemetría), intercambiables sin tocar el dominio.
+- **Idempotent Consumer**: Los consumers de RabbitMQ verifican su propio estado antes de actuar, para tolerar reintentos y entregas duplicadas (at-least-once delivery).
+- **CQRS "en espíritu"**: El camino de escritura (`ingestion-service`) está físicamente separado del modelo de lectura agregado (`fleet-gateway-service`), sin implementar un framework CQRS completo (event sourcing, múltiples read models) — decisión consciente de alcance para este prototipo.
 
 ### Frontend (Angular)
 
@@ -270,9 +270,9 @@ transaccional, el mismo principio del Circuit Breaker de arriba, extendido a niv
 /backend
   pom.xml                   Parent Maven (groupId com.simon.fleet), importa el BOM de Spring Boot
   /contracts                DTOs de eventos compartidos (wire format, sin lógica de dominio)
-  /ingestion-service        domain(model,validation,port.in,port.out) / application / infrastructure, Dockerfile propio
-  /alerting-service         domain(model,rule,port.in,port.out) / application / infrastructure, Dockerfile propio
-  /fleet-gateway-service    domain(model,port.in,port.out) / application / infrastructure, registro de vehículos, orquestador del Saga, vista de lectura del dashboard y push WebSocket/STOMP, Dockerfile propio
+  /ingestion-service        domain(model,validation,port.in,port.out) / application / infrastructure — Dockerfile propio
+  /alerting-service         domain(model,rule,port.in,port.out) / application / infrastructure — Dockerfile propio
+  /fleet-gateway-service    domain(model,port.in,port.out) / application / infrastructure — registro de vehículos, orquestador del Saga, vista de lectura del dashboard y push WebSocket/STOMP — Dockerfile propio
 /frontend
   Dockerfile                Build de producción (Angular -> nginx)
   src/app/core              Servicios transversales: HTTP (Repository), realtime (Adapter STOMP), store (Facade), modelos, config
@@ -304,15 +304,15 @@ cableado de Spring (beans, `@Value`, Clock) vive en `infrastructure.config`:
 - **`application`**: Solo las clases `*Service` que implementan los `port.in` y orquestan
   llamadas a los `port.out`; ningún contrato (interfaz) vive aquí, solo orquestación.
 - **`infrastructure`**: Adaptadores, organizados por rol técnico dentro de cada tecnología:
-  - `web.{controller,dto,mapper,exception}`, controladores REST, DTOs de request/response,
+  - `web.{controller,dto,mapper,exception}`: Controladores REST, DTOs de request/response,
     mappers DTO↔dominio y el `@RestControllerAdvice` global, cada uno en su propio subpaquete.
-  - `persistence.<mongo|postgres>.{entity,repository,adapter,config}`, entidades
+  - `persistence.<mongo|postgres>.{entity,repository,adapter,config}`: Entidades
     JPA/`@Document`, repositorios Spring Data, adaptadores que implementan `port.out`, y
     configuración específica de esa tecnología (ej. `MongoIndexConfig`).
-  - `messaging.rabbitmq.{config,publisher,consumer}`, topología de exchanges/colas/DLQ,
+  - `messaging.rabbitmq.{config,publisher,consumer}`: Topología de exchanges/colas/DLQ,
     adaptadores que publican eventos, y `@RabbitListener` que los consumen.
-  - `cache.redis`, adaptadores de Redis (sin subdividir: solo 2-3 archivos por servicio).
-  - `config`, beans de Spring transversales, no atados a una tecnología (`CorsConfig`,
+  - `cache.redis`: Adaptadores de Redis (sin subdividir: solo 2-3 archivos por servicio).
+  - `config`: Beans de Spring transversales, no atados a una tecnología (`CorsConfig`,
     `ClockConfig`, `OpenApiConfig`).
 
 `port.in` y `port.out` viven ambos bajo `domain` (no bajo `application`) porque son la misma
@@ -324,11 +324,11 @@ los adaptadores) es lo que hace que una regla tipo "`infrastructure` nunca depen
 ## Principios de calidad de código
 
 - **SOLID**
-  - **S, Single Responsibility:** Cada clase de dominio/caso de uso tiene una única razón de cambio (ej. `StoppedVehicleRule` solo decide si un vehículo está detenido; no persiste ni publica eventos).
-  - **O, Open/Closed:** Nuevas reglas de alerta o adaptadores se agregan implementando una interfaz existente (ver Strategy/Adapter arriba), sin modificar código que ya funciona y ya está probado.
-  - **L, Liskov Substitution:** Cualquier implementación de un puerto (ej. `TelemetryRepositoryPort`) debe poder sustituirse Postgres, Mongo, un fake de test— sin romper el caso de uso que la consume.
-  - **I, Interface Segregation:** Puertos pequeños y específicos (ej. `LocationCachePort` separado de `TelemetryRepositoryPort`) en vez de una interfaz "todo-en-uno" que obligue a implementar métodos que no aplican.
-  - **D, Dependency Inversion:** El dominio depende de interfaces (puertos) que él mismo define; la infraestructura depende del dominio, nunca al revés, la esencia de la arquitectura hexagonal.
+  - **S — Single Responsibility:** Cada clase de dominio/caso de uso tiene una única razón de cambio (ej. `StoppedVehicleRule` solo decide si un vehículo está detenido; no persiste ni publica eventos).
+  - **O — Open/Closed:** Nuevas reglas de alerta o adaptadores se agregan implementando una interfaz existente (ver Strategy/Adapter arriba), sin modificar código que ya funciona y ya está probado.
+  - **L — Liskov Substitution:** Cualquier implementación de un puerto (ej. `TelemetryRepositoryPort`) debe poder sustituirse Postgres, Mongo, un fake de test— sin romper el caso de uso que la consume.
+  - **I — Interface Segregation:** Puertos pequeños y específicos (ej. `LocationCachePort` separado de `TelemetryRepositoryPort`) en vez de una interfaz "todo-en-uno" que obligue a implementar métodos que no aplican.
+  - **D — Dependency Inversion:** El dominio depende de interfaces (puertos) que él mismo define; la infraestructura depende del dominio, nunca al revés, la esencia de la arquitectura hexagonal.
 - **ACID:** Cada escritura relacional crítica en PostgreSQL (transición de estado del vehículo, registro de una alerta) ocurre dentro de una transacción atómica. En los puntos donde la operación cruza varios almacenes (Postgres + Mongo + Redis vía el Saga) se documenta explícitamente que se sacrifica atomicidad distribuida a favor de consistencia eventual, y por qué eso es una decisión consciente y no un descuido.
 - **Clean Code:** Nombres expresivos y consistentes (dominio en español donde refleja el negocio, código e identificadores técnicos en inglés), funciones pequeñas con un solo nivel de abstracción, comentarios que expliquen el "por qué" y no el "qué" (el código ya lo dice), evitar duplicación (DRY) y no construir para hipotéticos futuros (YAGNI).
 - **Testing como red de seguridad:** JUnit5 + Mockito sobre las reglas de negocio más críticas (validación, detección de vehículo detenido, pasos del Saga); gracias a la arquitectura hexagonal estas pruebas son rápidas y no dependen de Spring, Postgres, Mongo, Redis ni RabbitMQ reales.
@@ -348,12 +348,12 @@ los adaptadores) es lo que hace que una regla tipo "`infrastructure` nunca depen
 - **Por qué los documentos de `telemetry_history` no llevan el campo `_class`:** Spring Data MongoDB lo agrega por defecto para poder deserializar de forma polimórfica (varias subclases posibles en una misma colección). Como `TelemetryDocument` es una única clase concreta sin jerarquía, ese campo es puro ruido en cada lectura GPS; se desactiva con un `MappingMongoConverter` (`DefaultMongoTypeMapper(null)`) en `MongoConverterConfig`.
 - **Cómo se evita la condición de carrera en la confirmación del Saga:** `ingestion-service` y `alerting-service` publican sus confirmaciones de forma independiente y pueden llegar casi al mismo tiempo. En vez de leer-modificar-guardar la entidad `Vehicle` completa (lo que podría perder una de las dos escrituras), `fleet-gateway-service` usa updates SQL atómicos y condicionados (`UPDATE ... WHERE status = 'PENDING_DELETION' AND cache_cleared_at IS NOT NULL AND data_purged_at IS NOT NULL`): sin importar el orden de llegada ni la concurrencia, solo la llamada que efectivamente cumple la condición transiciona el estado, y es segura de ejecutar repetidas veces.
 - **Por qué `fleet-gateway-service` tiene su propia tabla de historial de Flyway:** Comparte la base `fleet_telemetry` con `alerting-service`, y cada servicio debe versionar su propio esquema de forma independiente (`spring.flyway.table` distinto) para que sus migraciones no colisionen entre sí.
-- **Cómo se resuelve mostrar "vehículos activos y su último estado" sin consolidar las bases de datos:** Ese listado necesita datos de tres sitios (vehículos activos en Postgres de `fleet-gateway-service`, última posición en Redis/Mongo de `ingestion-service`, estado de alerta en Postgres/Redis de `alerting-service`). En vez de fusionar todo en un solo motor,lo que rompería la razón de ser de la persistencia poliglota—, `fleet-gateway-service` mantiene su propia **vista de lectura materializada** (columnas `last_lat`/`last_lng`/`movement_status` en su propia tabla `vehicles`), suscribiéndose a los eventos `fleet.telemetry` y `fleet.alerts` que ingestion-service y alerting-service **ya publicaban** desde la Fase 2. No hubo que tocar esos dos servicios: solo agregar dos consumers nuevos en el gateway. Es el patrón CQRS aplicado a nivel de integración entre microservicios (API Composition se evitó a propósito, para no meter llamadas síncronas entre servicios en el camino de lectura).
+- **Cómo se resuelve mostrar "vehículos activos y su último estado" sin consolidar las bases de datos:** Ese listado necesita datos de tres sitios (vehículos activos en Postgres de `fleet-gateway-service`, última posición en Redis/Mongo de `ingestion-service`, estado de alerta en Postgres/Redis de `alerting-service`). En vez de fusionar todo en un solo motor, lo que rompería la razón de ser de la persistencia poliglota—, `fleet-gateway-service` mantiene su propia **vista de lectura materializada** (columnas `last_lat`/`last_lng`/`movement_status` en su propia tabla `vehicles`), suscribiéndose a los eventos `fleet.telemetry` y `fleet.alerts` que ingestion-service y alerting-service **ya publicaban** desde la Fase 2. No hubo que tocar esos dos servicios: solo agregar dos consumers nuevos en el gateway. Es el patrón CQRS aplicado a nivel de integración entre microservicios (API Composition se evitó a propósito, para no meter llamadas síncronas entre servicios en el camino de lectura).
 - **Por qué un vehículo se auto-registra al recibir su primera telemetría:** El dashboard debe reflejar cualquier vehículo que esté reportando, no solo los que pasaron por `POST /api/v1/vehicles` explícitamente (el simulador, por ejemplo, no registra vehículos antes de mandar datos). El registro explícito sigue existiendo para quien quiera dar de alta un vehículo antes de que reporte.
 - **Por qué una coordenada repetida no saca a un vehículo de `ALERTA`:** Solo una coordenada **distinta** de la última conocida indica que el vehículo realmente volvió a moverse; si se restauraba a `DETENIDO` con cualquier lectura repetida, la alerta desaparecería del dashboard aunque el vehículo siguiera parado.
-- **Por qué las zonas seguras se implementaron como un Decorator sobre `AlertRule` y no como una regla nueva:** Un vehículo detenido en un parqueadero no es una alerta distinta, es la ausencia de la alerta `STOPPED_VEHICLE` que ya existe, `EvaluateTelemetryService` evalúa cada `AlertRule` de forma independiente y no tiene ningún mecanismo para que una regla cancele la de otra, así que forzarlo como una regla separada no funcionaría. `SafeZoneAwareAlertRule` envuelve a `StoppedVehicleRule` (sin modificarla): si el delegado no genera alerta, la deja pasar tal cual; si genera una y la coordenada cae dentro de una zona segura activa, la descarta, pero siempre conserva intacto el estado de tracking que calculó el delegado, para no corromper el conteo de tiempo detenido.
-- **Por qué las zonas seguras son círculos (centro + radio) y no polígonos:** Alcanza para el caso de uso (parqueaderos conocidos) sin necesitar point-in-polygon ni una librería geoespacial externa, la distancia real se calcula con la fórmula de Haversine (`Coordinates#distanceMetersTo`), solo con `java.lang.Math`.
-- **Por qué el panel de alertas del dashboard no depende solo del push en vivo:** El push por WebSocket (`/topic/alerts`) solo llega mientras la pestaña está conectada, recargar la página o abrirla después de que una alerta ya ocurrió dejaba el panel vacío aunque el vehículo siguiera mostrando el badge `ALERTA`. `fleet-gateway-service` expone `GET /api/v1/alerts`, que el dashboard consulta al cargar.
+- **Por qué las zonas seguras se implementaron como un Decorator sobre `AlertRule` y no como una regla nueva:** Un vehículo detenido en un parqueadero no es una alerta distinta, es la ausencia de la alerta `STOPPED_VEHICLE` que ya existe,  `EvaluateTelemetryService` evalúa cada `AlertRule` de forma independiente y no tiene ningún mecanismo para que una regla cancele la de otra, así que forzarlo como una regla separada no funcionaría. `SafeZoneAwareAlertRule` envuelve a `StoppedVehicleRule` (sin modificarla): si el delegado no genera alerta, la deja pasar tal cual; si genera una y la coordenada cae dentro de una zona segura activa, la descarta,  pero siempre conserva intacto el estado de tracking que calculó el delegado, para no corromper el conteo de tiempo detenido.
+- **Por qué las zonas seguras son círculos (centro + radio) y no polígonos:** Alcanza para el caso de uso (parqueaderos conocidos) sin necesitar point-in-polygon ni una librería geoespacial externa,  la distancia real se calcula con la fórmula de Haversine (`Coordinates#distanceMetersTo`), solo con `java.lang.Math`.
+- **Por qué el panel de alertas del dashboard no depende solo del push en vivo:** El push por WebSocket (`/topic/alerts`) solo llega mientras la pestaña está conectada,  recargar la página o abrirla después de que una alerta ya ocurrió dejaba el panel vacío aunque el vehículo siguiera mostrando el badge `ALERTA`. `fleet-gateway-service` expone `GET /api/v1/alerts`, que el dashboard consulta al cargar.
 - **Por qué `GET /api/v1/alerts` lee directamente la tabla `alerts` de `alerting-service` en vez de mantener una copia propia:** La primera versión sí mantenía una tabla separada (`alert_history`) poblada por evento, siguiendo el mismo patrón de vista de lectura que ya usa `vehicles`, pero a diferencia de esa vista (que combina telemetría + alertas en un campo que no existe en ningún otro lado), esta copia no aplicaba ninguna transformación real: terminaba siendo casi el mismo dato dos veces, y además solo capturaba alertas ocurridas *después* de que la copia empezó a funcionar (una alerta anterior quedaba invisible para el dashboard aunque el vehículo siguiera en `ALERTA`). Se eliminó esa tabla y `JdbcAlertRepositoryAdapter` consulta directamente `alerts`, una sola fuente de verdad, sin huecos históricos. Se usa `JdbcTemplate` (no una entidad JPA) a propósito: esa tabla la migra y versiona `alerting-service`, no `fleet-gateway-service`, y no debe participar de la validación de esquema (`ddl-auto: validate`) de este servicio como si fuera dueño de su DDL.
 - **Por qué `alerts.plate` no tiene una foreign key hacia una tabla de vehículos:** Es intencional. `alerting-service` no tiene (ni debe tener) su propia tabla de vehículos, no es dueño de esa identidad, solo recibe la placa como string dentro de los eventos que consume; la única tabla `vehicles` real vive en `fleet-gateway-service`, un bounded context distinto. Una FK cruzada acoplaría físicamente los esquemas de los dos servicios, que hoy comparten una sola Postgres solo por conveniencia de infraestructura de este prototipo, e impediría separarlos a bases de datos distintas más adelante sin migrar datos. La integridad referencial *entre* servicios se resuelve con eventos/Sagas (consistencia eventual), igual que el resto del proyecto; la integridad fuerte (con FKs/constraints) solo aplica *dentro* de lo que cada servicio es dueño. Sí se agregó el índice que faltaba para el nuevo patrón de acceso (`idx_alerts_raised_at`, para el `ORDER BY raised_at DESC` del historial).
 - **Por qué el identificador de vehículo es la placa real y no un id arbitrario:** El prototipo empezó identificando vehículos con un string cualquiera (`v1`, `v2`, ...) sin significado de negocio. Se renombró el concepto de punta a punta (`VehicleId` → `VehiclePlate`, campo `plate` en JSON/eventos/columnas) para que el identificador sea lo que un operador de flota real reconocería. Es un cambio deliberadamente simple por ahora: `VehiclePlate` normaliza a mayúsculas y recorta espacios en su constructor compacto (para que `"abc123"`, `" ABC123 "` y `"ABC123"` se reconozcan como la misma placa), pero no valida formato real de placa colombiana, esa validación queda como mejora futura explícita, no incluida a propósito para no acoplar el prototipo a un formato que complicaría los datos de prueba y el simulador sin aportar valor a esta fase.
@@ -363,7 +363,7 @@ los adaptadores) es lo que hace que una regla tipo "`infrastructure` nunca depen
 - **Por qué el dashboard usa Angular Material con un tema propio en vez de replicar la captura de referencia al pie de la letra:** La identidad de marca ("Simón": fondo oscuro, acento teal/mint) se usa como semilla del tema M3 (`ng generate @angular/material:m3-theme` con un color semilla teal), no como un diseño a calcar pixel por pixel, Material deriva automáticamente toda la escala de tonos (superficies, estados hover/focus, contraste), y los componentes reutilizan esos tokens (`--mat-sys-*`) en vez de colores sueltos.
 - **Por qué los colores de `movement_status` no salen del tema de Material:** Son un código de estado del negocio (verde/ámbar/rojo para movimiento/detención/alerta), no la identidad de marca, se fijan aparte y siempre van acompañados de ícono + etiqueta, nunca solo color, para no depender de que el operador distinga tonos.
 - **Por qué se agregó CORS en `fleet-gateway-service` recién en esta fase:** Mientras el backend se probaba con `curl`/Swagger no hacía falta, un navegador exige cabeceras `Access-Control-Allow-Origin` que ninguna otra herramienta de prueba valida. Se centralizó en un único `CorsConfig` (`WebMvcConfigurer`) en vez de `@CrossOrigin` disperso por controlador, con el origen permitido como property (`app.cors.allowed-origin`) en vez de hardcodeado.
-- **Por qué el dashboard llama a `ingestion-service` directamente para el historial de ruta, en vez de pasar por `fleet-gateway-service`:** El dato (histórico de MongoDB) nace y vive en `ingestion-service`; hacer que `fleet-gateway-service` lo reexpusiera habría significado una llamada HTTP síncrona de un microservicio a otro en el camino de lectura, justo el patrón de API Composition que ya se evitó a propósito para el modelo de lectura de vehículos (ver más arriba). Se prefirió que el dashboard hable con los dos backends que efectivamente necesita, mismo criterio que ya aplica la app móvil, que también habla con `ingestion-service` y `fleet-gateway-service` por separado, a costa de repetir `CorsConfig` en `ingestion-service` (antes solo lo necesitaba `fleet-gateway-service`, porque los demás clientes de `ingestion-service`, simulador, app móvil, no son navegador).
+- **Por qué el dashboard llama a `ingestion-service` directamente para el historial de ruta, en vez de pasar por `fleet-gateway-service`:** El dato (histórico de MongoDB) nace y vive en `ingestion-service`; hacer que `fleet-gateway-service` lo reexpusiera habría significado una llamada HTTP síncrona de un microservicio a otro en el camino de lectura, justo el patrón de API Composition que ya se evitó a propósito para el modelo de lectura de vehículos (ver más arriba). Se prefirió que el dashboard hable con los dos backends que efectivamente necesita, mismo criterio que ya aplica la app móvil, que también habla con `ingestion-service` y `fleet-gateway-service` por separado, a costa de repetir `CorsConfig` en `ingestion-service` (antes solo lo necesitaba `fleet-gateway-service`, porque los demás clientes de `ingestion-service`, simulador, app móvil — no son navegador).
 
 ## Propuesta arquitectónica: app móvil (Offline-First y batería)
 
@@ -438,7 +438,7 @@ sequenceDiagram
   con lecturas cada segundo agota la batería mucho antes de terminar el turno del conductor.
 - **Intervalo de reporte desacoplado del "cada segundo"**: A nivel de aplicación, el intervalo de
   reporte razonable para seguimiento de flota (no navegación turn-by-turn) es de 15-30 segundos, o
-  cada N metros recorridos,lo que ocurra primero—, coherente con la ventana de dedupe de 10 segundos
+  cada N metros recorridos, lo que ocurra primero, coherente con la ventana de dedupe de 10 segundos
   que ya existe server-side (para que cliente y servidor no terminen "peleando" con cadencias
   incompatibles).
 - **Android**: Usar `FusedLocationProviderClient` con prioridad balanceada
@@ -486,7 +486,7 @@ docker compose up -d --build
 | fleet-gateway-service | 8083 | healthcheck `/actuator/health` |
 | frontend | 4200 | Angular servido por nginx |
 
-El simulador no se levanta con el comando anterior, corre tras un profile aparte, para no
+El simulador no se levanta con el comando anteriorm, corre tras un profile aparte, para no
 generar tráfico de telemetría sintético cada vez que se levanta el entorno:
 
 ```bash
@@ -564,7 +564,7 @@ http://localhost:8083/swagger-ui/index.html   # vehículos / Saga de eliminació
 
 1. Despliega `POST /api/v1/telemetry` → **"Try it out"**.
 2. Edita el JSON de ejemplo (el `timestamp` debe ser una hora cercana a la actual en UTC,
-   ISO-8601, muy en el pasado o el futuro se rechaza a propósito, es una regla de negocio):
+   ISO-8601 — muy en el pasado o el futuro se rechaza a propósito, es una regla de negocio):
    ```json
    {
      "plate": "ABC123",
@@ -639,7 +639,7 @@ flutter emulators --launch <emulator_id> # arranca uno (o hazlo desde el Device 
 flutter run                              # o: flutter run -d <device_id>
 ```
 
-Al abrir la app, acepta el permiso de ubicación que pide Android (`ACCESS_FINE_LOCATION`), sin
+Al abrir la app, acepta el permiso de ubicación que pide Android (`ACCESS_FINE_LOCATION`) — sin
 él, la pantalla de viaje se queda en "Sin posición aún".
 
 ### Correr las pruebas unitarias
@@ -790,7 +790,7 @@ Si tuviera más tiempo o recursos, esto es lo que ajustaría o construiría a co
 **Alcance que directamente no estaba contemplado:**
 
 - **Autenticación y autorización por roles.** Ningún endpoint del backend valida quién hace la
-  petición hoy, cualquiera con la URL puede registrar, borrar o consultar vehículos. Con más
+  petición hoy — cualquiera con la URL puede registrar, borrar o consultar vehículos. Con más
   tiempo agregaría JWT/OAuth2 en `fleet-gateway-service` con al menos tres roles (operador,
   administrador, conductor), propagados al dashboard y a la app móvil.
 - **Multi-tenancy: una flota por empresa.** El modelo actual asume una sola flota compartiendo un
