@@ -37,12 +37,14 @@ public interface VehicleRepositoryPort {
     boolean completeIfBothConfirmed(VehiclePlate id);
 
     /**
-     * Registra el vehículo si todavía no existe (idempotente, vía upsert atómico). Lo usan los
-     * consumers de telemetría/alertas cuando llega un evento de un vehículo que nunca pasó por
-     * {@code POST /api/v1/vehicles}: el dashboard debe reflejar cualquier vehículo que esté
-     * reportando, no solo los registrados explícitamente.
+     * Registra el vehículo si todavía no existe, o lo reactiva si ya existe pero está
+     * {@code DELETED} (idempotente, vía upsert atómico). Lo usan los consumers de telemetría/
+     * alertas cuando llega un evento de una placa que nunca pasó por {@code POST
+     * /api/v1/vehicles}, o que fue eliminada y vuelve a reportar: el dashboard debe reflejar
+     * cualquier vehículo que esté reportando de verdad, no solo los registrados explícitamente
+     * ni solo los que nunca se borraron.
      */
-    void registerIfAbsent(VehiclePlate id, Instant registeredAt);
+    void registerOrReactivate(VehiclePlate id, Instant registeredAt);
 
     /**
      * Actualiza la última posición conocida y deriva el {@code movement_status} (EN_MOVIMIENTO

@@ -34,16 +34,32 @@ public interface VehicleJpaRepository extends JpaRepository<VehicleJpaEntity, St
     int completeIfBothConfirmed(@Param("plate") String plate);
 
     /**
-     * Upsert atómico: si el vehículo ya existe, no hace nada (evita pisar su estado real con
-     * uno "recién registrado" si dos eventos para el mismo vehículo nuevo llegan casi juntos).
+     * Upsert atómico: si la placa no existe, la registra como {@code ACTIVE}. Si ya existe pero
+     * está {@code DELETED} (soft-delete: la fila nunca se borra físicamente), la reactiva como si
+     * fuera un vehículo nuevo — mismo criterio que el alta automática: el dashboard debe reflejar
+     * cualquier vehículo que esté reportando de verdad. Se resetean los campos de la Saga de
+     * borrado anterior y la última posición conocida, para que arranque tan "limpio" como un
+     * vehículo genuinamente nuevo. Si la placa ya está {@code ACTIVE}/{@code PENDING_DELETION},
+     * el {@code WHERE} del `DO UPDATE` no aplica y el insert queda como no-op (no debería llegar
+     * aquí de todas formas, porque {@code updatePosition}/{@code markInAlert} ya habrían tenido
+     * éxito antes).
      */
     @Modifying
     @Query(value = """
             INSERT INTO vehicles (plate, status, registered_at)
             VALUES (:plate, 'ACTIVE', :registeredAt)
-            ON CONFLICT (plate) DO NOTHING
+            ON CONFLICT (plate) DO UPDATE SET
+                status = 'ACTIVE',
+                registered_at = EXCLUDED.registered_at,
+                cache_cleared_at = NULL,
+                data_purged_at = NULL,
+                last_lat = NULL,
+                last_lng = NULL,
+                last_reported_at = NULL,
+                movement_status = NULL
+            WHERE vehicles.status = 'DELETED'
             """, nativeQuery = true)
-    void registerIfAbsent(@Param("plate") String plate, @Param("registeredAt") Instant registeredAt);
+    void registerOrReactivate(@Param("plate") String plate, @Param("registeredAt") Instant registeredAt);
 
     /**
      * El CASE WHEN decide EN_MOVIMIENTO vs DETENIDO comparando con la posición ya guardada, y
@@ -59,13 +75,13 @@ public interface VehicleJpaRepository extends JpaRepository<VehicleJpaEntity, St
                     ELSE 'EN_MOVIMIENTO'
                 END,
                 v.lastLat = :lat, v.lastLng = :lng, v.lastReportedAt = :when
-            WHERE v.plate = :plate
+            WHERE v.plate = :plate AND v.status != 'DELETED'
             """)
     int updatePosition(@Param("plate") String plate, @Param("lat") double lat, @Param("lng") double lng,
                         @Param("when") Instant when);
 
     @Modifying
-    @Query("UPDATE VehicleJpaEntity v SET v.movementStatus = 'ALERTA' WHERE v.plate = :plate")
+    @Query("UPDATE VehicleJpaEntity v SET v.movementStatus = 'ALERTA' WHERE v.plate = :plate AND v.status != 'DELETED'")
     int markInAlert(@Param("plate") String plate);
 
     List<VehicleJpaEntity> findAllByStatus(String status);
