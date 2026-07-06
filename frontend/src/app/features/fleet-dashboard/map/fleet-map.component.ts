@@ -3,9 +3,11 @@ import { LeafletModule } from '@bluehalo/ngx-leaflet';
 import * as L from 'leaflet';
 import { latLng, tileLayer } from 'leaflet';
 import { FleetStoreService } from '../../../core/store/fleet-store.service';
+import { TelemetryHistoryApiService } from '../../../core/http/telemetry-history-api.service';
 import { hasPosition, Vehicle } from '../../../core/models/vehicle.model';
 import { MovementStatus } from '../../../core/models/movement-status.model';
 import { MarkerBuilder } from './marker-builder';
+import { RouteLineBuilder } from './route-line-builder';
 
 interface MarkerEntry {
   marker: L.Marker;
@@ -27,8 +29,15 @@ interface MarkerEntry {
 })
 export class FleetMapComponent {
   private readonly fleetStore = inject(FleetStoreService);
+  private readonly telemetryHistoryApi = inject(TelemetryHistoryApiService);
   private readonly markersByPlate = new Map<string, MarkerEntry>();
   private map?: L.Map;
+  private routeLine?: L.Polyline;
+  /** Última placa para la que ya se pidió/está en vuelo el historial — evita re-pedirlo en cada
+   *  tick de WebSocket, ya que el efecto de abajo se re-ejecuta en cada actualización de
+   *  `vehicles()`, no solo cuando cambia `selectedPlate()`. Es una preocupación de presentación
+   *  (no repetir peticiones), no estado de dominio, por eso vive aquí y no en el store. */
+  private lastFetchedRoutePlate: string | null = null;
 
   /** Capa oscura de tiles (sin API key) y vista inicial centrada en Bogotá. */
   readonly mapOptions: L.MapOptions = {
@@ -49,8 +58,12 @@ export class FleetMapComponent {
     // marcador de un vehículo recién aparecido).
     effect(() => {
       const vehicles = this.fleetStore.vehicles();
+      const selectedPlate = this.fleetStore.selectedPlate();
       this.syncMarkers(vehicles);
-      this.focusSelected(this.fleetStore.selectedPlate(), vehicles);
+      this.focusSelected(selectedPlate, vehicles);
+      if (selectedPlate !== this.lastFetchedRoutePlate) {
+        this.loadRoute(selectedPlate);
+      }
     });
   }
 
@@ -115,5 +128,33 @@ export class FleetMapComponent {
     }
     this.map.flyTo([vehicle.lastLat, vehicle.lastLng], Math.max(this.map.getZoom(), 14));
     entry.marker.openPopup();
+  }
+
+  /**
+   * Traza (o quita) la ruta del vehículo seleccionado. Marca `plate` como ya pedida de
+   * inmediato, antes de que resuelva el HTTP, para no disparar una segunda petición si el
+   * efecto se re-ejecuta mientras la primera sigue en vuelo. Si el historial falla (ej.
+   * ingestion-service caído), se descarta en silencio: es una funcionalidad secundaria y el
+   * resto del dashboard sigue funcionando con los datos de fleet-gateway-service.
+   */
+  private loadRoute(plate: string | null): void {
+    this.lastFetchedRoutePlate = plate;
+    this.routeLine?.remove();
+    this.routeLine = undefined;
+
+    if (!plate || !this.map) {
+      return;
+    }
+    this.telemetryHistoryApi.history(plate).subscribe({
+      next: (points) => {
+        if (plate !== this.lastFetchedRoutePlate || !this.map) {
+          return;
+        }
+        this.routeLine = RouteLineBuilder.build(points).addTo(this.map);
+      },
+      error: () => {
+        // Funcionalidad secundaria: sin ruta, sin toast bloqueante.
+      },
+    });
   }
 }

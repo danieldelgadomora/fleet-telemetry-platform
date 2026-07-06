@@ -6,6 +6,8 @@ export interface AppEnvironment {
   apiBaseUrl: string;
   /** URL del endpoint STOMP/SockJS de fleet-gateway-service. */
   wsUrl: string;
+  /** URL base de la API REST de ingestion-service (sin barra final): solo la usa el historial de recorrido para trazar rutas. */
+  ingestionBaseUrl: string;
 }
 
 /**

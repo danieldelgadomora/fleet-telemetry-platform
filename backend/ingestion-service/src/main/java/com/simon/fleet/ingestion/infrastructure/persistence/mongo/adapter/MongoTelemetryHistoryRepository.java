@@ -9,7 +9,10 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * Adaptador hacia MongoDB. {@code save} está protegido con Circuit Breaker + Retry: si Mongo
@@ -47,5 +50,18 @@ public class MongoTelemetryHistoryRepository implements TelemetryHistoryReposito
     @Override
     public void purgeByVehicle(VehiclePlate plate) {
         mongoRepository.deleteByPlate(plate.value());
+    }
+
+    /**
+     * Lectura bajo demanda del dashboard: sin Circuit Breaker/Retry a propósito. Esa protección
+     * existe en {@code save} porque bloquear la ingesta en caliente es crítico; una consulta de
+     * historial no tiene ese requisito, y ningún otro endpoint de lectura del proyecto lo usa.
+     */
+    @Override
+    public List<TelemetryPoint> findRecent(VehiclePlate plate, int limit) {
+        return mongoRepository.findByPlateOrderByRecordedAtDesc(plate.value(), PageRequest.of(0, limit))
+                .stream()
+                .map(TelemetryDocument::toDomain)
+                .toList();
     }
 }

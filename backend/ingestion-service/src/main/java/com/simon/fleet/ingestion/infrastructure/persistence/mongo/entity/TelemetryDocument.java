@@ -1,6 +1,8 @@
 package com.simon.fleet.ingestion.infrastructure.persistence.mongo.entity;
 
+import com.simon.fleet.ingestion.domain.model.Coordinates;
 import com.simon.fleet.ingestion.domain.model.TelemetryPoint;
+import com.simon.fleet.ingestion.domain.model.VehiclePlate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,5 +47,10 @@ public class TelemetryDocument {
                 point.recordedAt(),
                 new GeoJsonPoint(point.coordinates().lng(), point.coordinates().lat())
         );
+    }
+
+    /** Inverso de {@link #fromDomain}, para devolver histórico ya leído de Mongo como dominio puro. */
+    public TelemetryPoint toDomain() {
+        return new TelemetryPoint(new VehiclePlate(plate), new Coordinates(lat, lng), recordedAt);
     }
 }
