@@ -3,6 +3,7 @@ package com.simon.fleet.gateway.application;
 import com.simon.fleet.gateway.domain.exception.VehicleAlreadyRegisteredException;
 import com.simon.fleet.gateway.domain.model.Vehicle;
 import com.simon.fleet.gateway.domain.model.VehiclePlate;
+import com.simon.fleet.gateway.domain.model.VehicleStatus;
 import com.simon.fleet.gateway.domain.port.out.VehicleRepositoryPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,5 +63,27 @@ class RegisterVehicleServiceTest {
         assertThat(result.getRegisteredAt()).isEqualTo(NOW);
         verify(repositoryPort).save(vehicleCaptor.capture());
         assertThat(vehicleCaptor.getValue().getId()).isEqualTo(plate);
+    }
+
+    @Test
+    @DisplayName("una placa DELETED se reactiva como ACTIVE en vez de lanzar excepción")
+    void placaEliminadaSeReactiva() {
+        Vehicle deleted = Vehicle.builder()
+                .id(plate)
+                .status(VehicleStatus.DELETED)
+                .registeredAt(Instant.parse("2026-01-01T00:00:00Z"))
+                .build();
+        Vehicle reactivated = Vehicle.register(plate, NOW);
+
+        when(repositoryPort.findById(plate))
+                .thenReturn(Optional.of(deleted))
+                .thenReturn(Optional.of(reactivated));
+
+        RegisterVehicleService service = new RegisterVehicleService(repositoryPort, fixedClock);
+        Vehicle result = service.register(plate);
+
+        assertThat(result.getStatus()).isEqualTo(VehicleStatus.ACTIVE);
+        verify(repositoryPort).registerOrReactivate(plate, NOW);
+        verify(repositoryPort, never()).save(any());
     }
 }
