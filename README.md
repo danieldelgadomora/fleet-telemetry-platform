@@ -114,27 +114,27 @@ sequenceDiagram
 
 ## Decisiones técnicas
 
-Por qué cada pieza del stack, no solo cuál — la razón detrás de cada base de datos, framework y
+Por qué cada pieza del stack, no solo cuál, la razón detrás de cada base de datos, framework y
 mecanismo de resiliencia elegido:
 
 | Capa | Tecnología | Por qué |
 |---|---|---|
-| Backend | Java 21 + Spring Boot 3.3 | Stack más profundo del equipo: 8 años en sistemas transaccionales críticos (RUNT), arquitectura basada en servicios |
+| Backend | Java 21 + Spring Boot 3.3 | El stack que domino con mayor profundidad, con arquitectura orientada a servicios |
 | Arquitectura backend | Hexagonal (Ports & Adapters) + DDD ligero por bounded context | Aísla las reglas de negocio de Spring/JPA/AMQP/Redis; facilita testing y evolución independiente por servicio |
 | Persistencia (transaccional) | PostgreSQL 16 (JPA/Hibernate) | Vehículos, alertas y estado del Saga de eliminación: necesitan transaccionalidad, relaciones y estados consistentes |
-| Persistencia (telemetría GPS) | MongoDB 7 (colección *time-series* + índice `2dsphere`) | Histórico de coordenadas: escritura muy alta, append-only, sin joins, con consultas por placa+rango de tiempo y geoespaciales — encaja mejor que un modelo relacional (persistencia poliglota) |
+| Persistencia (telemetría GPS) | MongoDB 7 (colección *time-series* + índice `2dsphere`) | Histórico de coordenadas: escritura muy alta, append-only, sin joins, con consultas por placa+rango de tiempo y geoespaciales, encaja mejor que un modelo relacional (persistencia poliglota) |
 | Caché | Redis 7 | Última posición conocida + dedupe de coordenadas, con TTL corto |
 | Mensajería | RabbitMQ 3 (topic exchanges) | Desacopla Ingesta ↔ Alertas; permite encolar ante fallos de BD sin tumbar la ingesta |
 | Resiliencia | Resilience4j (Circuit Breaker + Retry) | Estándar del ecosistema Spring Boot para tolerancia a fallos |
 | Tiempo real | WebSocket + STOMP | Push del servidor al dashboard (y a futuro, a la app móvil) sin polling |
 | Validación | Bean Validation + Specification Pattern | Reglas de negocio de validación de payload GPS, composables y testeables de forma aislada |
 | Build backend | Maven multi-módulo (monorepo) | Un solo repositorio, módulos independientes por servicio + módulo `contracts` compartido |
-| Testing backend | JUnit5 + Mockito (+ Testcontainers opcional) | Pruebas unitarias de reglas de negocio críticas; integración con infraestructura real cuando aporte valor |
-| Frontend | Angular 18 (standalone components) + TypeScript | Stack frontend más fuerte del equipo (Angular, Angular Material, PrimeNG) |
+| Testing backend | JUnit5 + Mockito | Pruebas unitarias de reglas de negocio críticas. |
+| Frontend | Angular 18 (standalone components) + TypeScript | El framework frontend que mejor domino (Angular, Angular Material, PrimeNG) |
 | Mapa | Leaflet (ngx-leaflet) | Gratuito, sin API key |
 | Cliente realtime | `@stomp/stompjs` + `sockjs-client` | Consistente con STOMP en el backend |
 | Móvil | Flutter 3.44.4 (Dart 3.12.2) | Permite un prototipo funcional real (no mockups) para el conductor |
-| Simulador de telemetría | Python (script standalone, `asyncio` + `httpx`) | Componente desacoplado (solo habla HTTP/JSON con el backend, no comparte tipos con nada más); práctica reciente del equipo con scripting en Python |
+| Simulador de telemetría | Python (script standalone, `asyncio` + `httpx`) | Componente desacoplado (solo habla HTTP/JSON con el backend, no comparte tipos con nada más); experiencia reciente propia con scripting en Python |
 | Infraestructura | Docker + Docker Compose | Un solo comando (`docker compose up -d --build`) para levantar todo el entorno |
 | CI/CD | GitHub Actions | Build + test de backend y frontend, análisis estático y build de imágenes Docker |
 
