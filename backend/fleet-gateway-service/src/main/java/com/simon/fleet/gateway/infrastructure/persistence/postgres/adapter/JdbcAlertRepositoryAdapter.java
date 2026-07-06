@@ -5,7 +5,7 @@ import com.simon.fleet.gateway.domain.model.VehiclePlate;
 import com.simon.fleet.gateway.domain.port.out.AlertRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -19,7 +19,7 @@ import java.util.List;
  * participar de la validación de esquema ({@code ddl-auto: validate}) de este servicio como si
  * fuera dueño de su DDL.
  */
-@Component
+@Repository
 @RequiredArgsConstructor
 public class JdbcAlertRepositoryAdapter implements AlertRepositoryPort {
 
@@ -28,6 +28,7 @@ public class JdbcAlertRepositoryAdapter implements AlertRepositoryPort {
 
     private final JdbcTemplate jdbcTemplate;
 
+    /** Lee las {@code limit} alertas más recientes directamente de la tabla que mantiene alerting-service. */
     @Override
     public List<Alert> findRecent(int limit) {
         return jdbcTemplate.query(FIND_RECENT_SQL, (rs, rowNum) -> new Alert(

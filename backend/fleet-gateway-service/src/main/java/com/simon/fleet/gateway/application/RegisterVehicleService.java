@@ -13,6 +13,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.Optional;
 
+/** Alta explícita de un vehículo (fuera del auto-registro por telemetría/alerta). */
 @Service
 @RequiredArgsConstructor
 public class RegisterVehicleService implements RegisterVehicleUseCase {
@@ -20,6 +21,10 @@ public class RegisterVehicleService implements RegisterVehicleUseCase {
     private final VehicleRepositoryPort repositoryPort;
     private final Clock clock;
 
+    /**
+     * Rechaza la placa si ya existe y sigue {@code ACTIVE}/{@code PENDING_DELETION}; si existe
+     * pero está {@code DELETED} la reactiva; si no existe, la registra como {@code ACTIVE} nueva.
+     */
     @Override
     public Vehicle register(VehiclePlate plate) {
         Optional<Vehicle> existing = repositoryPort.findById(plate);

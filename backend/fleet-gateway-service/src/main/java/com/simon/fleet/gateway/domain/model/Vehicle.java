@@ -37,6 +37,7 @@ public class Vehicle {
     private Instant lastReportedAt;
     private MovementStatus movementStatus;
 
+    /** Crea un vehículo nuevo en estado {@code ACTIVE}, sin ningún dato de la Saga ni de posición. */
     public static Vehicle register(VehiclePlate id, Instant now) {
         return Vehicle.builder()
                 .id(id)

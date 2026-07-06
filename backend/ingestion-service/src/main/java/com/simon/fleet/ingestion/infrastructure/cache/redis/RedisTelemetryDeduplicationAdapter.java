@@ -5,7 +5,7 @@ import com.simon.fleet.ingestion.domain.port.out.TelemetryDeduplicationPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.time.Duration;
 
@@ -16,7 +16,7 @@ import java.time.Duration;
  * ocupada y se reporta como duplicada. Es atómico a nivel de Redis, así que dos peticiones
  * casi simultáneas nunca pasan ambas como "no duplicada".
  */
-@Component
+@Repository
 @RequiredArgsConstructor
 public class RedisTelemetryDeduplicationAdapter implements TelemetryDeduplicationPort {
 
@@ -28,6 +28,7 @@ public class RedisTelemetryDeduplicationAdapter implements TelemetryDeduplicatio
     @Value("${ingestion.dedupe.ttl-seconds:15}")
     private long ttlSeconds;
 
+    /** Marca la coordenada como vista dentro de su ventana de tiempo; true si ya se había visto. */
     @Override
     public boolean isDuplicate(TelemetryPoint point) {
         long bucket = point.recordedAt().getEpochSecond() / windowSeconds;

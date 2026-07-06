@@ -9,6 +9,7 @@ package com.simon.fleet.gateway.domain.model;
  */
 public record VehiclePlate(String value) {
 
+    /** Rechaza placas vacías y normaliza a mayúsculas/sin espacios, para que placas equivalentes comparen igual. */
     public VehiclePlate {
         if (value == null || value.isBlank()) {
             throw new IllegalArgumentException("la placa no puede estar vacía");

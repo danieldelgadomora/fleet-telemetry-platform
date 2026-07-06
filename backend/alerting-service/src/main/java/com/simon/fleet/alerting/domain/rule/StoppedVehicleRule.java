@@ -25,11 +25,18 @@ public class StoppedVehicleRule implements AlertRule {
         this.stoppedThreshold = stoppedThreshold;
     }
 
+    /** Código estable de esta regla, publicado en la alerta y en el evento. */
     @Override
     public String ruleCode() {
         return RULE_CODE;
     }
 
+    /**
+     * Si la coordenada cambió respecto al estado guardado (o es la primera lectura del
+     * vehículo), reinicia el "reloj" de detenido. Si sigue siendo la misma coordenada, calcula
+     * cuánto lleva así; al alcanzar o superar el umbral configurado (borde inclusive) genera la
+     * alerta {@code STOPPED_VEHICLE}, y mientras no lo alcance, solo propaga el estado sin alertar.
+     */
     @Override
     public AlertEvaluationResult evaluate(VehicleReading reading, Optional<VehicleTrackingState> currentState) {
         boolean sameLocationAsBefore = currentState

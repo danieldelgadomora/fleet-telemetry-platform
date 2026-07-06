@@ -6,6 +6,7 @@ import com.simon.fleet.ingestion.domain.model.TelemetryPoint;
 import com.simon.fleet.ingestion.infrastructure.web.dto.TelemetryRequestDto;
 import com.simon.fleet.ingestion.infrastructure.web.dto.TelemetryResponseDto;
 import com.simon.fleet.ingestion.infrastructure.web.mapper.TelemetryRequestMapper;
+import com.simon.fleet.ingestion.infrastructure.web.mapper.TelemetryResponseMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,13 +48,8 @@ public class TelemetryController {
         TelemetryIngestionResult result = ingestTelemetryUseCase.ingest(point);
 
         // Ambos resultados son un 202 (el dato ya quedó representado en el sistema de una forma
-        // u otra), pero el cuerpo sí distingue cuál fue, para que el cliente sepa qué pasó.
-        String message = switch (result) {
-            case ACCEPTED -> "Telemetría aceptada, la persistencia histórica ocurre de forma asíncrona";
-            case DUPLICATE_IGNORED -> "Lectura duplicada dentro de la ventana de dedupe, ignorada";
-        };
-
-        TelemetryResponseDto body = new TelemetryResponseDto(point.plate().value(), result.name(), message);
+        // u otra); el cuerpo sí distingue cuál fue, para que el cliente sepa qué pasó.
+        TelemetryResponseDto body = TelemetryResponseMapper.toDto(point, result);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(body);
     }
 }

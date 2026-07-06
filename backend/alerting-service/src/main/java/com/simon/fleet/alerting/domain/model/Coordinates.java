@@ -10,6 +10,7 @@ public record Coordinates(double lat, double lng) {
 
     private static final double EARTH_RADIUS_METERS = 6_371_000d;
 
+    /** Compara ambas coordenadas redondeadas a 6 decimales, para decidir si representan el mismo punto. */
     public boolean isSameLocationAs(Coordinates other) {
         return round(this.lat) == round(other.lat) && round(this.lng) == round(other.lng);
     }

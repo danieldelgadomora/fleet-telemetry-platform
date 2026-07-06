@@ -10,6 +10,7 @@ import java.time.Instant;
  */
 public record PanicButtonPress(VehiclePlate plate, Double lat, Double lng, String message, Instant triggeredAt) {
 
+    /** Exige el momento de activación: sin él no hay forma de ordenar ni deduplicar el evento. */
     public PanicButtonPress {
         if (triggeredAt == null) {
             throw new IllegalArgumentException("triggeredAt no puede ser nulo");

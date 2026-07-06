@@ -27,6 +27,7 @@ public class RaisePanicAlertService implements RaisePanicAlertUseCase {
     private final AlertRepositoryPort alertRepositoryPort;
     private final AlertEventPublisherPort eventPublisherPort;
 
+    /** Construye la alerta {@code PANIC_BUTTON} (con o sin posición/nota del conductor), la persiste y la publica. */
     @Override
     public void raise(VehiclePlate plate, Double lat, Double lng, String driverMessage, Instant triggeredAt) {
         Alert alert = Alert.builder()

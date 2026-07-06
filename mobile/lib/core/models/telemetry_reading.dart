@@ -13,6 +13,7 @@ class TelemetryReading {
     required this.timestamp,
   });
 
+  /// Serializa a JSON snake_case, tal como espera `TelemetryRequestDto` en el backend.
   Map<String, dynamic> toJson() => {
         'plate': plate,
         'lat': lat,

@@ -12,8 +12,10 @@ import java.util.Optional;
  */
 public interface VehicleTrackingStatePort {
 
+    /** Busca el último estado de tracking conocido del vehículo (última coordenada distinta y desde cuándo). */
     Optional<VehicleTrackingState> find(VehiclePlate plate);
 
+    /** Persiste (o sobrescribe) el estado de tracking del vehículo. */
     void save(VehicleTrackingState state);
 
     /** Participante de la Saga de borrado: limpia el estado de tracking del vehículo. */

@@ -9,6 +9,7 @@ import '../models/alert.dart';
 /// `fleet-gateway-service`. El endpoint no filtra por placa: ese filtro se
 /// aplica del lado del cliente.
 class AlertsApiRepository {
+  /// Consulta las `limit` alertas más recientes de toda la flota (sin filtrar por placa).
   Future<List<Alert>> fetchRecent({int limit = AppConfig.alertsHistoryLimit}) async {
     final response = await http.get(
       Uri.parse('${AppConfig.fleetGatewayBaseUrl}/api/v1/alerts?limit=$limit'),

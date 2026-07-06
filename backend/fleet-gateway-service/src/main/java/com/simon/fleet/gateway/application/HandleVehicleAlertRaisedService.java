@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
+/**
+ * Mantiene al día la vista de lectura del dashboard consumiendo el evento de alerta que ya
+ * publica alerting-service, sin tocar sus bases de datos ni su código.
+ */
 @Service
 @RequiredArgsConstructor
 public class HandleVehicleAlertRaisedService implements HandleVehicleAlertRaisedUseCase {
@@ -16,6 +20,10 @@ public class HandleVehicleAlertRaisedService implements HandleVehicleAlertRaised
     private final VehicleRepositoryPort repositoryPort;
     private final FleetStatusBroadcastPort fleetStatusBroadcastPort;
 
+    /**
+     * Marca el vehículo en {@code ALERTA}; si la placa nunca se registró o estaba
+     * {@code DELETED}, la da de alta/reactiva primero. Empuja el estado resultante al dashboard.
+     */
     @Override
     public void onAlertRaised(VehiclePlate plate, Instant raisedAt) {
         boolean updated = repositoryPort.markInAlert(plate);

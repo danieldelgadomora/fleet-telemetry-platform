@@ -21,6 +21,7 @@ public class ValidTimestampSpecification implements TelemetrySpecification {
 
     private final Clock clock;
 
+    /** Rechaza la lectura si su timestamp está fuera de la ventana [-24h, +1min] respecto al reloj del servidor. */
     @Override
     public boolean isSatisfiedBy(TelemetryPoint point) {
         Instant now = Instant.now(clock);
@@ -29,6 +30,7 @@ public class ValidTimestampSpecification implements TelemetrySpecification {
                 && !recordedAt.isBefore(now.minus(MAX_PAST_AGE));
     }
 
+    /** Mensaje explicando la ventana de tiempo permitida. */
     @Override
     public String violationMessage() {
         return "timestamp debe estar entre %s antes y %s después del momento actual del servidor"

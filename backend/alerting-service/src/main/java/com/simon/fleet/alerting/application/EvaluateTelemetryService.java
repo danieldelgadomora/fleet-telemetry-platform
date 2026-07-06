@@ -30,6 +30,10 @@ public class EvaluateTelemetryService implements EvaluateTelemetryUseCase {
     private final AlertRepositoryPort alertRepositoryPort;
     private final AlertEventPublisherPort eventPublisherPort;
 
+    /**
+     * Evalúa la lectura contra cada regla registrada, persiste el estado de tracking que cada
+     * una haya actualizado y, si alguna generó una alerta, la guarda y la publica.
+     */
     @Override
     public void evaluate(VehicleReading reading) {
         Optional<VehicleTrackingState> currentState = trackingStatePort.find(reading.plate());

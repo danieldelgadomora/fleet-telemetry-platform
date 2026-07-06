@@ -11,5 +11,6 @@ import java.time.Instant;
  */
 public interface RaisePanicAlertUseCase {
 
+    /** Genera la alerta {@code PANIC_BUTTON} para la placa, con posición/nota opcionales. */
     void raise(VehiclePlate plate, Double lat, Double lng, String driverMessage, Instant triggeredAt);
 }

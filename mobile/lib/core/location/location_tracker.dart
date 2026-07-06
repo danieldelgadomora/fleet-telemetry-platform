@@ -24,6 +24,8 @@ class LocationTracker {
     }
   }
 
+  /// Pide permiso si hace falta y empieza a escuchar posiciones, entregando una muestra solo
+  /// cuando ya pasó el intervalo mínimo de reporte desde la última entregada.
   Future<void> start(void Function(Position position) onSample) async {
     await _ensurePermission();
     final settings = LocationSettings(
@@ -39,6 +41,7 @@ class LocationTracker {
     });
   }
 
+  /// Cancela la suscripción activa y limpia el throttle, para que un próximo `start` arranque limpio.
   void stop() {
     _subscription?.cancel();
     _subscription = null;

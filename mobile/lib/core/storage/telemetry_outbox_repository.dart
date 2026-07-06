@@ -9,6 +9,7 @@ import 'telemetry_local_database.dart';
 /// nunca se re-sella con la hora del reenvío — y respeta un tope de tamaño descartando
 /// primero las lecturas más viejas, igual que documenta la Propuesta Arquitectónica del README.
 class TelemetryOutboxRepository {
+  /// Encola una lectura; si ya se alcanzó el tope de la cola, descarta primero la más vieja.
   Future<void> enqueue(TelemetryReading reading) async {
     final db = await TelemetryLocalDatabase.instance;
     final currentCount = Sqflite.firstIntValue(
@@ -46,11 +47,13 @@ class TelemetryOutboxRepository {
         .toList();
   }
 
+  /// Borra una lectura ya confirmada por el backend, para no reenviarla de nuevo.
   Future<void> remove(int id) async {
     final db = await TelemetryLocalDatabase.instance;
     await db.delete('pending_telemetry', where: 'id = ?', whereArgs: [id]);
   }
 
+  /// Número de lecturas pendientes de envío, para mostrarlo en la UI.
   Future<int> count() async {
     final db = await TelemetryLocalDatabase.instance;
     return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM pending_telemetry')) ?? 0;

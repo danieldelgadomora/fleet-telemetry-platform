@@ -6,15 +6,17 @@ import com.simon.fleet.alerting.domain.port.out.AlertRepositoryPort;
 import com.simon.fleet.alerting.infrastructure.persistence.postgres.entity.AlertJpaEntity;
 import com.simon.fleet.alerting.infrastructure.persistence.postgres.repository.AlertJpaRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-@Component
+/** Adaptador de {@link AlertRepositoryPort} sobre PostgreSQL, vía Spring Data JPA. */
+@Repository
 @RequiredArgsConstructor
 public class PostgresAlertRepositoryAdapter implements AlertRepositoryPort {
 
     private final AlertJpaRepository jpaRepository;
 
+    /** Persiste la alerta como fila de la tabla {@code alerts}. */
     @Override
     public void save(Alert alert) {
         AlertJpaEntity entity = new AlertJpaEntity(

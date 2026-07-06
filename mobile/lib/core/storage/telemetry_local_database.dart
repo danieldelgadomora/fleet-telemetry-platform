@@ -6,6 +6,7 @@ import 'package:sqflite/sqflite.dart';
 class TelemetryLocalDatabase {
   static Database? _db;
 
+  /// Devuelve la instancia única de la base de datos, abriéndola (y creando la tabla) si hace falta.
   static Future<Database> get instance async {
     if (_db != null) return _db!;
     final dbPath = await getDatabasesPath();

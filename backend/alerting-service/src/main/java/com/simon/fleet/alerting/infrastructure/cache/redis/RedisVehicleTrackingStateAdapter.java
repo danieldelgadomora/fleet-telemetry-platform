@@ -8,7 +8,7 @@ import com.simon.fleet.alerting.domain.port.out.VehicleTrackingStatePort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
@@ -18,7 +18,7 @@ import java.util.Optional;
  * ambos comparten la misma instancia de Redis. Sin TTL: este estado debe sobrevivir mientras
  * el vehículo exista, no expirar solo.
  */
-@Component
+@Repository
 @RequiredArgsConstructor
 @Slf4j
 public class RedisVehicleTrackingStateAdapter implements VehicleTrackingStatePort {
@@ -28,6 +28,7 @@ public class RedisVehicleTrackingStateAdapter implements VehicleTrackingStatePor
     private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
 
+    /** Lee y deserializa el estado de tracking de la placa, vacío si no hay nada o falla la deserialización. */
     @Override
     public Optional<VehicleTrackingState> find(VehiclePlate plate) {
         String json = redisTemplate.opsForValue().get(key(plate));
@@ -42,6 +43,7 @@ public class RedisVehicleTrackingStateAdapter implements VehicleTrackingStatePor
         }
     }
 
+    /** Serializa y sobrescribe el estado de tracking de la placa. */
     @Override
     public void save(VehicleTrackingState state) {
         try {
@@ -52,6 +54,7 @@ public class RedisVehicleTrackingStateAdapter implements VehicleTrackingStatePor
         }
     }
 
+    /** Borra el estado de tracking de la placa (participante de la Saga de eliminación). */
     @Override
     public void clear(VehiclePlate plate) {
         redisTemplate.delete(key(plate));

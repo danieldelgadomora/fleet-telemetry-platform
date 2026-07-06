@@ -9,6 +9,7 @@ import java.time.Instant;
  */
 public record TelemetryPoint(VehiclePlate plate, Coordinates coordinates, Instant recordedAt) {
 
+    /** Exige el momento de la lectura: sin él no se puede validar la ventana de tiempo válida ni ordenar el histórico. */
     public TelemetryPoint {
         if (recordedAt == null) {
             throw new IllegalArgumentException("recordedAt no puede ser nulo");
