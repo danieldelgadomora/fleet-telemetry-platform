@@ -4,6 +4,10 @@ Prototipo funcional de un sistema de telemetría GPS para flotas: ingesta de coo
 detección de anomalías/alertas, dashboard web en tiempo real y app móvil para conductores con
 cola offline-first.
 
+## Video demo
+
+[![Video demo del sistema de telemetría de flotas](https://img.youtube.com/vi/-ZJrcU-H_fI/hqdefault.jpg)](https://youtu.be/-ZJrcU-H_fI)
+
 ## Arquitectura seleccionada y por qué
 
 3 microservicios backend independientes, comunicados de forma asíncrona vía RabbitMQ, cada
